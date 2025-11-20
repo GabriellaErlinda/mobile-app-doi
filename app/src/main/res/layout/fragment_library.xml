@@ -61,7 +61,7 @@
                 style="@style/Widget.Material3.TextInputLayout.FilledBox.Dense"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Cari nama obat…"
+                android:hint="Cari obat generik…"
                 app:startIconDrawable="@android:drawable/ic_menu_search"
                 app:startIconTint="#64748B"
                 app:boxBackgroundColor="@android:color/transparent"

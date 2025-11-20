@@ -9,12 +9,12 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.Navigation; // IMPORT ADDED
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.doirag.R;
 
-// Ganti nama class menjadi ObatSediaanFragment
 public class ObatSediaanFragment extends Fragment {
 
     private RecyclerView recycler;
@@ -30,13 +30,19 @@ public class ObatSediaanFragment extends Fragment {
         recycler.setLayoutManager(new LinearLayoutManager(requireContext()));
 
         adapter = new ObatSediaanAdapter(item -> {
-            // TODO: Handle klik obat sediaan
+            // Create bundle with the item
+            Bundle bundle = new Bundle();
+            bundle.putSerializable("drug_item", item);
+
+            // Navigate to Detail Page
+            Navigation.findNavController(requireView())
+                    .navigate(R.id.nav_drug_detail, bundle);
         });
+
         recycler.setAdapter(adapter);
 
         viewModel = new ViewModelProvider(requireActivity()).get(LibraryViewModel.class);
 
-        // Meng-observe data sediaan
         viewModel.getFilteredSediaanDrugs().observe(getViewLifecycleOwner(), sediaanItems -> {
             adapter.submitList(sediaanItems);
         });

@@ -1,16 +1,17 @@
 package com.example.doirag.ui.library;
 
 import com.google.gson.annotations.SerializedName;
-
+import java.io.Serializable;
 import java.util.Objects;
 
-public class ObatSediaanItem {
+// ADDED "implements Serializable"
+public class ObatSediaanItem implements Serializable {
 
     @SerializedName("id")
     public String id;
 
-    @SerializedName("name") // Ganti "drug_name" di Supabase Anda menjadi "name" agar cocok
-    public String drug_name; // atau ubah @SerializedName("drug_name")
+    @SerializedName("name")
+    public String drug_name;
 
     @SerializedName("manufacturer")
     public String manufacturer;
@@ -49,11 +50,9 @@ public class ObatSediaanItem {
     public String kemasan;
 
 
-    // Constructor default diperlukan GSON
     public ObatSediaanItem() {
     }
 
-    // Override equals() dan hashCode() agar DiffUtil bekerja lebih baik
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

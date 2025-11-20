@@ -30,31 +30,42 @@ public class MainActivity extends AppCompatActivity {
             NavController navController = navHostFragment.getNavController();
             NavigationUI.setupWithNavController(navView, navController);
 
-            // === KEYBOARD DETECTION LOGIC ===
-            // This listener detects layout changes (like the keyboard popping up)
+            // === 1. DESTINATION LISTENER ===
+            // Handle general visibility based on which page we are on
+            navController.addOnDestinationChangedListener((controller, destination, arguments) -> {
+                if (destination.getId() == R.id.nav_drug_detail) {
+                    // Always hide navbar on Drug Detail page
+                    navView.setVisibility(View.GONE);
+                } else {
+                    // Show navbar on Home, Library, and initially on Chat
+                    navView.setVisibility(View.VISIBLE);
+                }
+            });
+
+            // === 2. KEYBOARD LISTENER ===
+            // Handle visibility dynamic changes (like typing in Chat)
             View rootView = findViewById(R.id.container);
             rootView.getViewTreeObserver().addOnGlobalLayoutListener(() -> {
                 Rect r = new Rect();
-                // 1. Get the visible height of the app window
                 rootView.getWindowVisibleDisplayFrame(r);
                 int screenHeight = rootView.getRootView().getHeight();
-
-                // 2. Calculate the difference (height - visible part)
-                // If the difference is big (> 15% of screen), the keyboard is likely OPEN
                 int keypadHeight = screenHeight - r.bottom;
 
                 if (keypadHeight > screenHeight * 0.15) {
                     // Keyboard is OPEN
-                    // Check if we are on the Chat/Rag page
+                    // Only hide navbar if we are on the Chat/Rag page
                     if (navController.getCurrentDestination() != null &&
                             navController.getCurrentDestination().getId() == R.id.nav_rag) {
-                        // Hide the navbar so the input field sits on top of the keyboard
                         navView.setVisibility(View.GONE);
                     }
                 } else {
                     // Keyboard is CLOSED
-                    // Bring the navbar back
-                    navView.setVisibility(View.VISIBLE);
+                    // Restore navbar ONLY if we are NOT on the Drug Detail page
+                    // (Because the Detail page must always have it hidden)
+                    if (navController.getCurrentDestination() != null &&
+                            navController.getCurrentDestination().getId() != R.id.nav_drug_detail) {
+                        navView.setVisibility(View.VISIBLE);
+                    }
                 }
             });
         }

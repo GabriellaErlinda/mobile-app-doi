@@ -22,4 +22,15 @@
         android:name="com.example.doirag.ui.rag.RagFragment"
         android:label="@string/title_rag"
         tools:layout="@layout/fragment_rag" />
+
+    <fragment
+        android:id="@+id/nav_drug_detail"
+        android:name="com.example.doirag.ui.library.DetailObatSediaanFragment"
+        android:label="Detail Obat"
+        tools:layout="@layout/fragment_detail_obat_sediaan">
+        <argument
+            android:name="drug_item"
+            app:argType="com.example.doirag.ui.library.ObatSediaanItem" />
+    </fragment>
+
 </navigation>
