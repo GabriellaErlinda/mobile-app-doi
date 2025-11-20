@@ -1,0 +1,348 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true"
+    android:background="#F8FAFC"
+    tools:context=".ui.home.HomeFragment">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!-- Hero Section with Gradient -->
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/home_header_gradient"
+            android:paddingTop="24dp"
+            android:paddingBottom="32dp"
+            android:paddingStart="20dp"
+            android:paddingEnd="20dp">
+
+            <!-- Welcome Icon -->
+            <ImageView
+                android:id="@+id/iconWelcome"
+                android:layout_width="56dp"
+                android:layout_height="56dp"
+                android:src="@drawable/ic_launcher_background"
+                app:tint="#FFFFFF"
+                android:alpha="0.95"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
+
+            <!-- Welcome Text -->
+            <TextView
+                android:id="@+id/homeTitle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="Selamat Datang 👋"
+                android:textSize="26sp"
+                android:textStyle="bold"
+                android:textColor="@android:color/white"
+                android:layout_marginTop="8dp"
+                app:layout_constraintTop_toBottomOf="@id/iconWelcome"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
+
+            <!-- Subtitle -->
+            <TextView
+                android:id="@+id/homeSubtitle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="Daftar obat dalam genggaman Anda"
+                android:textSize="15sp"
+                android:textColor="#E0E7FF"
+                android:alpha="0.95"
+                android:lineSpacingExtra="2dp"
+                android:layout_marginTop="8dp"
+                app:layout_constraintTop_toBottomOf="@id/homeTitle"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <!-- Main Content -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="20dp">
+
+            <!-- Quick Search Card -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/searchCard"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="2dp"
+                app:strokeWidth="0dp"
+                android:layout_marginBottom="24dp"
+                android:backgroundTint="@android:color/white">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:padding="16dp"
+                    android:gravity="center_vertical">
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@android:drawable/ic_menu_search"
+                        app:tint="#64748B" />
+
+                    <TextView
+                        android:id="@+id/inputSearch"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Cari obat, indikasi, atau komposisi..."
+                        android:textSize="15sp"
+                        android:textColor="#94A3B8"
+                        android:layout_marginStart="12dp"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:background="?attr/selectableItemBackground" />
+
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Main Features Grid -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Fitur Utama"
+                android:textStyle="bold"
+                android:textSize="18sp"
+                android:textColor="#1E293B"
+                android:layout_marginBottom="16dp" />
+
+            <GridLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:columnCount="2"
+                android:rowCount="2"
+                android:alignmentMode="alignMargins"
+                android:columnOrderPreserved="false"
+                android:layout_marginBottom="28dp">
+
+                <!-- Drug Library Card -->
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/cardScan"
+                    android:layout_width="0dp"
+                    android:layout_height="160dp"
+                    android:layout_columnWeight="1"
+                    android:layout_margin="6dp"
+                    app:cardCornerRadius="20dp"
+                    app:cardElevation="2dp"
+                    app:strokeWidth="0dp"
+                    android:backgroundTint="#EFF6FF"
+                    android:clickable="true"
+                    android:foreground="?attr/selectableItemBackground">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:padding="20dp"
+                        android:orientation="vertical"
+                        android:gravity="center">
+
+                        <com.google.android.material.card.MaterialCardView
+                            android:layout_width="56dp"
+                            android:layout_height="56dp"
+                            app:cardCornerRadius="16dp"
+                            app:cardElevation="0dp"
+                            android:backgroundTint="#2563EB">
+
+                            <ImageView
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:padding="14dp"
+                                app:srcCompat="@drawable/ic_drug_lib"
+                                app:tint="@android:color/white" />
+                        </com.google.android.material.card.MaterialCardView>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Daftar Obat"
+                            android:textColor="#1E293B"
+                            android:textSize="15sp"
+                            android:textStyle="bold"
+                            android:layout_marginTop="12dp"
+                            android:gravity="center" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Telusuri database lengkap"
+                            android:textColor="#64748B"
+                            android:textSize="11sp"
+                            android:layout_marginTop="4dp"
+                            android:gravity="center"
+                            android:maxLines="2" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- RAG Chat Card -->
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/cardChat"
+                    android:layout_width="0dp"
+                    android:layout_height="160dp"
+                    android:layout_columnWeight="1"
+                    android:layout_margin="6dp"
+                    app:cardCornerRadius="20dp"
+                    app:cardElevation="2dp"
+                    app:strokeWidth="0dp"
+                    android:backgroundTint="#ECFDF5"
+                    android:clickable="true"
+                    android:foreground="?attr/selectableItemBackground">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:padding="20dp"
+                        android:orientation="vertical"
+                        android:gravity="center">
+
+                        <com.google.android.material.card.MaterialCardView
+                            android:layout_width="56dp"
+                            android:layout_height="56dp"
+                            app:cardCornerRadius="16dp"
+                            app:cardElevation="0dp"
+                            android:backgroundTint="#059669">
+
+                            <ImageView
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:padding="14dp"
+                                app:srcCompat="@drawable/ic_rag_chat"
+                                app:tint="@android:color/white" />
+                        </com.google.android.material.card.MaterialCardView>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Tanya Obat"
+                            android:textColor="#1E293B"
+                            android:textSize="15sp"
+                            android:textStyle="bold"
+                            android:layout_marginTop="12dp"
+                            android:gravity="center" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Chat AI untuk informasi"
+                            android:textColor="#64748B"
+                            android:textSize="11sp"
+                            android:layout_marginTop="4dp"
+                            android:gravity="center"
+                            android:maxLines="2" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+            </GridLayout>
+
+            <!-- Categories Section -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Kategori Populer"
+                android:textStyle="bold"
+                android:textSize="18sp"
+                android:textColor="#1E293B"
+                android:layout_marginBottom="12dp" />
+
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/chipGroupCategories"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:singleLine="false"
+                app:chipSpacingHorizontal="8dp"
+                app:chipSpacingVertical="8dp"
+                android:layout_marginBottom="28dp" />
+
+            <!-- Recent Searches -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Pencarian Terakhir"
+                android:textStyle="bold"
+                android:textSize="18sp"
+                android:textColor="#1E293B"
+                android:layout_marginBottom="12dp" />
+
+            <LinearLayout
+                android:id="@+id/layoutHistory"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingBottom="16dp" />
+
+            <!-- How to Use Section -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="1dp"
+                app:strokeColor="#E2E8F0"
+                app:strokeWidth="1dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="20dp"
+                android:backgroundTint="@android:color/white">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="20dp">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="📖 Cara Menggunakan"
+                        android:textStyle="bold"
+                        android:textSize="16sp"
+                        android:textColor="#1E293B"
+                        android:layout_marginBottom="12dp" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="1. Gunakan Daftar Obat untuk mencari informasi lengkap tentang obat-obatan"
+                        android:textSize="14sp"
+                        android:textColor="#475569"
+                        android:lineSpacingExtra="4dp"
+                        android:layout_marginBottom="8dp" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="2. Manfaatkan Tanya Obat (RAG) untuk bertanya seputar dosis, interaksi, atau efek samping"
+                        android:textSize="14sp"
+                        android:textColor="#475569"
+                        android:lineSpacingExtra="4dp"
+                        android:layout_marginBottom="8dp" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="3. Simpan obat favorit untuk akses cepat di kemudian hari"
+                        android:textSize="14sp"
+                        android:textColor="#475569"
+                        android:lineSpacingExtra="4dp" />
+
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+        </LinearLayout>
+
+    </LinearLayout>
+</androidx.core.widget.NestedScrollView>

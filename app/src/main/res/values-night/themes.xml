@@ -1,0 +1,72 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- ===== Base Theme (supports Day/Night) ===== -->
+    <style name="Theme.Doirag" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Primary brand color -->
+        <item name="colorPrimary">#0EA5A5</item>
+        <item name="colorOnPrimary">#FFFFFF</item>
+        <item name="colorPrimaryContainer">#5EEAD4</item>
+
+        <!-- Secondary color -->
+        <item name="colorSecondary">#2563EB</item>
+        <item name="colorOnSecondary">#FFFFFF</item>
+        <item name="colorSecondaryContainer">#DDE9FF</item>
+
+        <!-- Tertiary color (optional accent for highlights) -->
+        <item name="colorTertiary">#7C3AED</item>
+        <item name="colorOnTertiary">#FFFFFF</item>
+
+        <!-- Surface & background -->
+        <item name="android:colorBackground">#FFFFFF</item>
+        <item name="colorSurface">#FFFFFF</item>
+        <item name="colorSurfaceVariant">#F7F8FA</item>
+        <item name="colorOnSurface">#0F172A</item>
+        <item name="colorOnSurfaceVariant">#475569</item>
+
+        <!-- Outline & elevation -->
+        <item name="colorOutline">#D7DCE1</item>
+
+        <!-- Error & states -->
+        <item name="colorError">#DC2626</item>
+        <item name="colorOnError">#FFFFFF</item>
+
+        <!-- Status bar -->
+        <item name="android:statusBarColor">?attr/colorPrimary</item>
+        <item name="android:navigationBarColor">?attr/colorSurface</item>
+        <item name="android:windowLightStatusBar">true</item>
+
+        <!-- Typography & ripple -->
+        <item name="android:textColorPrimary">#0F172A</item>
+        <item name="android:textColorSecondary">#475569</item>
+        <item name="android:colorControlHighlight">#1A0EA5A5</item> <!-- ripple tint -->
+    </style>
+
+    <!-- ===== Light variant (optional override) ===== -->
+    <style name="Theme.Doirag.Light" parent="Theme.Material3.Light.NoActionBar">
+        <item name="colorPrimary">#0EA5A5</item>
+        <item name="android:windowLightStatusBar">true</item>
+    </style>
+
+    <!-- ===== Dark variant ===== -->
+    <style name="Theme.Doirag.Dark" parent="Theme.Material3.Dark.NoActionBar">
+        <item name="colorPrimary">#5EEAD4</item>
+        <item name="colorOnPrimary">#00302C</item>
+        <item name="colorSurface">#0B1217</item>
+        <item name="colorSurfaceVariant">#111827</item>
+        <item name="colorOnSurface">#E5E7EB</item>
+        <item name="colorOnSurfaceVariant">#94A3B8</item>
+        <item name="colorOutline">#334155</item>
+        <item name="android:statusBarColor">?attr/colorSurface</item>
+        <item name="android:windowLightStatusBar">false</item>
+    </style>
+
+    <!-- ===== NoActionBar for fragments/screens that handle their own toolbar ===== -->
+    <style name="Theme.Doirag.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="Theme.Doirag.AppBarOverlay" parent="ThemeOverlay.Material3.ActionBar" />
+    <style name="Theme.Doirag.PopupOverlay" parent="ThemeOverlay.Material3.Light" />
+
+</resources>

@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#F8FAFC"
+    tools:context=".ui.library.LibraryFragment">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appBarLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/white"
+        app:elevation="0dp">
+
+        <!-- Header with Title -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingTop="16dp"
+            android:paddingStart="20dp"
+            android:paddingEnd="20dp">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Daftar Obat"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                android:textColor="#1E293B"
+                android:layout_marginBottom="4dp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Database lengkap informasi obat Indonesia"
+                android:textSize="14sp"
+                android:textColor="#64748B"
+                android:layout_marginBottom="16dp" />
+
+        </LinearLayout>
+
+        <!-- Search Bar -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginBottom="12dp"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="2dp"
+            app:strokeWidth="0dp"
+            android:backgroundTint="@android:color/white">
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/searchLayout"
+                style="@style/Widget.Material3.TextInputLayout.FilledBox.Dense"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Cari nama obat…"
+                app:startIconDrawable="@android:drawable/ic_menu_search"
+                app:startIconTint="#64748B"
+                app:boxBackgroundColor="@android:color/transparent"
+                app:boxStrokeWidth="0dp"
+                app:boxStrokeWidthFocused="0dp"
+                app:hintTextColor="#94A3B8">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/searchInput"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:imeOptions="actionSearch"
+                    android:inputType="text"
+                    android:textSize="15sp"
+                    android:maxLines="1" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Tabs -->
+        <com.google.android.material.tabs.TabLayout
+            android:id="@+id/tabLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:color/white"
+            app:tabIndicatorColor="#2563EB"
+            app:tabIndicatorHeight="3dp"
+            app:tabTextColor="#64748B"
+            app:tabSelectedTextColor="#2563EB"
+            app:tabIndicatorFullWidth="false"
+            app:tabMode="fixed"
+            app:tabTextAppearance="@style/TabTextStyle" />
+
+        <!-- Filter and Sort Bar (Will be shown/hidden programmatically) -->
+        <HorizontalScrollView
+            android:id="@+id/filterScrollView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:scrollbars="none"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:paddingTop="8dp"
+            android:paddingBottom="12dp"
+            android:visibility="gone">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <!-- Filter Button -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnFilter"
+                    style="@style/Widget.Material3.Button.OutlinedButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Filter"
+                    android:textSize="13sp"
+                    android:textColor="#475569"
+                    app:icon="@drawable/ic_filter"
+                    app:iconTint="#475569"
+                    app:iconSize="18dp"
+                    app:strokeColor="#CBD5E1"
+                    app:cornerRadius="12dp"
+                    android:layout_marginEnd="8dp"
+                    android:paddingStart="12dp"
+                    android:paddingEnd="16dp" />
+
+                <!-- Sort Button -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnSort"
+                    style="@style/Widget.Material3.Button.OutlinedButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Urutkan"
+                    android:textSize="13sp"
+                    android:textColor="#475569"
+                    app:icon="@drawable/ic_sort"
+                    app:iconTint="#475569"
+                    app:iconSize="18dp"
+                    app:strokeColor="#CBD5E1"
+                    app:cornerRadius="12dp"
+                    android:paddingStart="12dp"
+                    android:paddingEnd="16dp" />
+
+                <!-- Active Filter Chips Container -->
+                <com.google.android.material.chip.ChipGroup
+                    android:id="@+id/activeFiltersChipGroup"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    app:singleLine="true"
+                    app:chipSpacingHorizontal="6dp" />
+
+            </LinearLayout>
+        </HorizontalScrollView>
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <!-- ViewPager for tabs -->
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/viewPager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
