@@ -12,10 +12,14 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
+import androidx.core.graphics.Insets;
 
 import com.example.doirag.databinding.FragmentRagBinding;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.textfield.TextInputEditText;
+
 
 public class RagFragment extends Fragment {
 
@@ -71,6 +75,13 @@ public class RagFragment extends Fragment {
         // 5. Setup Chip Prompts
         setupPromptChips();
 
+        // Listen for keyboard (IME) insets and add padding to the bottom
+        ViewCompat.setOnApplyWindowInsetsListener(binding.getRoot(), (v, windowInsets) -> {
+            Insets imeInsets = windowInsets.getInsets(WindowInsetsCompat.Type.ime());
+            // Apply padding to the bottom equal to the keyboard height
+            v.setPadding(v.getPaddingLeft(), v.getPaddingTop(), v.getPaddingRight(), imeInsets.bottom);
+            return windowInsets;
+        });
 
         return root;
     }

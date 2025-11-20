@@ -5,134 +5,129 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/background"
+    android:paddingTop="24dp"
     tools:context=".ui.rag.RagFragment">
 
-    <!-- Safety banner -->
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/bannerSafety"
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:cardBackgroundColor="?attr/colorSurfaceVariant"
-        app:cardCornerRadius="12dp"
-        app:strokeColor="?attr/colorOutline"
+        android:layout_margin="16dp"
+        app:cardBackgroundColor="#FFF7ED"
+        app:strokeColor="#FED7AA"
         app:strokeWidth="1dp"
-        android:layout_margin="12dp"
+        app:cardCornerRadius="12dp"
+        app:cardElevation="0dp"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:padding="12dp">
+            android:padding="12dp"
+            android:gravity="center_vertical">
+
             <ImageView
                 android:layout_width="20dp"
                 android:layout_height="20dp"
-                android:layout_marginEnd="8dp"
-                app:srcCompat="@android:drawable/ic_dialog_info"
-                app:tint="?attr/colorOnSurfaceVariant"/>
+                android:src="@android:drawable/ic_dialog_info"
+                app:tint="#F97316"
+                android:layout_marginEnd="12dp"/>
+
             <TextView
                 android:id="@+id/textSafety"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Konten bersifat informasi—bukan pengganti nasihat tenaga kesehatan."
-                android:textColor="?attr/colorOnSurfaceVariant"
-                android:textSize="12sp"/>
+                android:text="Informasi ini dibuat oleh AI dan bukan pengganti saran dokter profesional."
+                android:textSize="12sp"
+                android:textColor="#9A3412"
+                android:lineSpacingExtra="2dp"/>
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 
-    <!-- Daftar chat -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerChat"
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:layout_marginBottom="8dp"
         android:clipToPadding="false"
-        android:paddingStart="12dp"
-        android:paddingEnd="12dp"
-        android:paddingBottom="8dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="16dp"
         app:layout_constraintTop_toBottomOf="@id/bannerSafety"
         app:layout_constraintBottom_toTopOf="@id/promptsContainer"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        tools:listitem="@layout/item_chat_assistant"
-        tools:itemCount="4"/>
+        app:layout_constraintEnd_toEndOf="parent" />
 
-    <!-- Prompt templates (chips) -->
     <HorizontalScrollView
         android:id="@+id/promptsContainer"
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:fillViewport="true"
-        android:paddingStart="8dp"
-        android:paddingEnd="8dp"
-        android:paddingBottom="6dp"
-        app:layout_constraintBottom_toTopOf="@id/composerCard"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:paddingBottom="8dp"
+        android:scrollbars="none"
+        app:layout_constraintBottom_toTopOf="@id/composerCard">
+
         <com.google.android.material.chip.ChipGroup
             android:id="@+id/chipGroupPrompts"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:singleSelection="false"
             app:singleLine="true"
-            app:chipSpacingHorizontal="8dp"
-            app:chipSpacingVertical="8dp">
-            <!-- Chips akan diisi dari kode -->
-        </com.google.android.material.chip.ChipGroup>
+            app:chipSpacingHorizontal="8dp"/>
     </HorizontalScrollView>
 
-    <!-- Composer (input + actions) -->
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/composerCard"
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="12dp"
-        app:cardCornerRadius="16dp"
-        app:strokeColor="?attr/colorOutline"
-        app:strokeWidth="1dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+        app:cardElevation="8dp"
+        app:cardCornerRadius="0dp"
+        android:backgroundTint="@color/surface"
+        app:layout_constraintBottom_toBottomOf="parent">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:padding="8dp"
-            android:gravity="center_vertical">
+            android:padding="12dp"
+            android:gravity="bottom">
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/inputLayout"
-                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:layout_marginStart="8dp"
-                android:hint="Tanyakan pada MediBot"
-                app:boxStrokeColor="?attr/colorPrimary"
-                app:boxBackgroundMode="outline">
+                app:boxBackgroundMode="none"
+                app:hintEnabled="false">
+
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/inputMessage"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:hint="Tulis pertanyaan Anda..."
+                    android:background="@drawable/bg_bubble_bot"
+                    android:backgroundTint="#F1F5F9"
+                    android:padding="16dp"
+                    android:textSize="16sp"
                     android:maxLines="4"
-                    android:minLines="1"
-                    android:inputType="textMultiLine"
-                    android:imeOptions="actionSend"/>
+                    android:inputType="textCapSentences|textMultiLine"/>
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/buttonSend"
                 style="@style/Widget.Material3.Button.IconButton.Filled"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
+                android:layout_marginBottom="2dp"
                 app:icon="@android:drawable/ic_menu_send"
-                app:iconGravity="textStart"
-                app:iconPadding="0dp"
-                app:iconSize="20dp"
-                android:contentDescription="Kirim"/>
+                app:iconTint="@color/white"
+                app:backgroundTint="@color/primary"
+                app:cornerRadius="16dp"/>
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 
