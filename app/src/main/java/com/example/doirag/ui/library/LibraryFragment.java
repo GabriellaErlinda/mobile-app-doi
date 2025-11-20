@@ -9,7 +9,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.PopupMenu;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -109,7 +108,7 @@ public class LibraryFragment extends Fragment {
             binding.btnFilter.setVisibility(View.GONE);
         }
 
-        // SORT BUTTON
+        // SORT BUTTON CLICK LISTENER
         binding.btnSort.setOnClickListener(v -> showSortMenu());
 
         // FILTER BUTTON
@@ -125,16 +124,21 @@ public class LibraryFragment extends Fragment {
         return binding.getRoot();
     }
 
+    // --- Sort Menu Logic ---
     private void showSortMenu() {
         PopupMenu popup = new PopupMenu(requireContext(), binding.btnSort);
-        popup.getMenu().add(0, 1, 0, "Abjad A-Z");
-        popup.getMenu().add(0, 2, 0, "Abjad Z-A");
+
+        // Add options: ID 1 for Ascending, ID 2 for Descending
+        popup.getMenu().add(0, 1, 0, "A→Z");
+        popup.getMenu().add(0, 2, 0, "Z→A");
 
         popup.setOnMenuItemClickListener(item -> {
             if (item.getItemId() == 1) {
+                // User chose A-Z
                 viewModel.setSortOrder(true);
                 binding.btnSort.setText("A-Z");
             } else {
+                // User chose Z-A
                 viewModel.setSortOrder(false);
                 binding.btnSort.setText("Z-A");
             }
@@ -145,11 +149,8 @@ public class LibraryFragment extends Fragment {
 
     private void showFilterBottomSheet() {
         BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(requireContext());
-        View sheetView = getLayoutInflater().inflate(R.layout.fragment_list_simple, null);
-        // Note: Ideally create a separate layout `bottom_sheet_filter.xml` containing just a ChipGroup inside a ScrollView.
-        // Reusing existing layout for simplicity, stripping recycler/header logic manually or creating simple view programmatically.
 
-        // Let's build the view programmatically to be safe and clean
+        // Build view programmatically
         android.widget.ScrollView scrollView = new android.widget.ScrollView(requireContext());
         android.widget.LinearLayout container = new android.widget.LinearLayout(requireContext());
         container.setOrientation(android.widget.LinearLayout.VERTICAL);
@@ -169,6 +170,7 @@ public class LibraryFragment extends Fragment {
         Chip allChip = new Chip(requireContext());
         allChip.setText("Semua Kategori");
         allChip.setCheckable(true);
+        // If active filter is null, check this chip
         if (viewModel.getActiveCategoryFilter() == null) allChip.setChecked(true);
         allChip.setOnClickListener(v -> {
             viewModel.setCategoryFilter(null);
@@ -183,9 +185,12 @@ public class LibraryFragment extends Fragment {
                 Chip chip = new Chip(requireContext());
                 chip.setText(cat);
                 chip.setCheckable(true);
+
+                // Check if this category is currently active
                 if (cat.equals(viewModel.getActiveCategoryFilter())) {
                     chip.setChecked(true);
                 }
+
                 chip.setOnClickListener(v -> {
                     viewModel.setCategoryFilter(cat);
                     bottomSheetDialog.dismiss();
@@ -211,11 +216,11 @@ public class LibraryFragment extends Fragment {
             chip.setOnCloseIconClickListener(v -> viewModel.setCategoryFilter(null));
             binding.activeFiltersChipGroup.addView(chip);
 
-            // Change button appearance to indicate active filter
+            // Highlight filter button
             binding.btnFilter.setStrokeColor(android.content.res.ColorStateList.valueOf(
                     getResources().getColor(R.color.primary, null)));
         } else {
-            // Reset button appearance
+            // Reset filter button
             binding.btnFilter.setStrokeColor(android.content.res.ColorStateList.valueOf(0xFFCBD5E1));
         }
     }

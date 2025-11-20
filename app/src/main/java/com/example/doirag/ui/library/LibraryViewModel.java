@@ -16,15 +16,13 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
-import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import okhttp3.HttpUrl;
-import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
-import okhttp3.RequestBody;
 import okhttp3.Response;
 
 public class LibraryViewModel extends AndroidViewModel {
@@ -37,9 +35,8 @@ public class LibraryViewModel extends AndroidViewModel {
     private final String SUPABASE_BASE_URL = "https://htkwoucfxjjthcoifaiq.supabase.co";
     private final String SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh0a3dvdWNmeGpqdGhjb2lmYWlxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI4NTMwMDAsImV4cCI6MjA3ODQyOTAwMH0.6Gk-JfyIFO1vcIieeKmaMPYRjNJuSwQwaVuevItipE4";
 
-    // --- Data Storage (Master Lists for Local Filtering) ---
+    // --- Data Storage ---
     private List<ObatGenerikItem> masterGenerikList = new ArrayList<>();
-    private List<ObatSediaanItem> masterSediaanList = new ArrayList<>();
     private List<ObatSediaanItem> allSediaanDrugs = new ArrayList<>(); // Store ALL drugs
 
     // --- State (Input) ---
@@ -63,34 +60,32 @@ public class LibraryViewModel extends AndroidViewModel {
         this.httpClient = new OkHttpClient();
         this.gson = new Gson();
 
-        // Load ALL drugs on initialization
+        // Load Data on initialization
         fetchAllSediaanDrugs();
         fetchCategories();
     }
 
-    // --- FUNGSI KONTROL ---
+    // --- FUNGSI KONTROL UI ---
 
     public void setCurrentTab(int position) {
-        if (!Objects.equals(currentTab.getValue(), position)) {
+        if (currentTab.getValue() == null || currentTab.getValue() != position) {
             currentTab.setValue(position);
         }
     }
 
     public void setSearchQuery(String query) {
-        if (!Objects.equals(query, searchQuery.getValue())) {
+        if (searchQuery.getValue() == null || !searchQuery.getValue().equals(query)) {
             searchQuery.setValue(query);
             applySearchAndFilters();
         }
     }
 
-    // NEW: Apply Sort
     public void setSortOrder(boolean ascending) {
         this.isSortAscending = ascending;
         applySearchAndFilters();
         processGenerikList();
     }
 
-    // NEW: Apply Filter
     public void setCategoryFilter(String category) {
         this.activeCategoryFilter = category;
         applySearchAndFilters();
@@ -112,7 +107,7 @@ public class LibraryViewModel extends AndroidViewModel {
         return filteredSediaanDrugs;
     }
 
-    // --- INTERNAL PROCESSING (Search, Sort & Filter) ---
+    // --- LOGIC FILTERING & SORTING ---
 
     private void applySearchAndFilters() {
         if (allSediaanDrugs.isEmpty()) return;
@@ -120,7 +115,7 @@ public class LibraryViewModel extends AndroidViewModel {
         String query = searchQuery.getValue();
         List<ObatSediaanItem> processed = new ArrayList<>();
 
-        // 1. Apply Search Filter
+        // 1. Apply Search
         if (query != null && !query.trim().isEmpty()) {
             String lowerQuery = query.toLowerCase().trim();
             for (ObatSediaanItem item : allSediaanDrugs) {
@@ -147,7 +142,7 @@ public class LibraryViewModel extends AndroidViewModel {
             processed = categoryFiltered;
         }
 
-        // 3. Sort (Alphabetical)
+        // 3. Sort
         Collections.sort(processed, (o1, o2) -> {
             String s1 = o1.drug_name != null ? o1.drug_name : "";
             String s2 = o2.drug_name != null ? o2.drug_name : "";
@@ -165,8 +160,6 @@ public class LibraryViewModel extends AndroidViewModel {
         if (masterGenerikList == null) return;
 
         List<ObatGenerikItem> processed = new ArrayList<>(masterGenerikList);
-
-        // 1. Sort (Alphabetical)
         Collections.sort(processed, (o1, o2) -> {
             String s1 = o1.nama_generik != null ? o1.nama_generik : "";
             String s2 = o2.nama_generik != null ? o2.nama_generik : "";
@@ -185,8 +178,10 @@ public class LibraryViewModel extends AndroidViewModel {
     public void fetchCategories() {
         CompletableFuture.runAsync(() -> {
             try {
-                HttpUrl url = HttpUrl.parse(SUPABASE_BASE_URL + "/rest/v1/rpc/get_unique_categories")
+                // Get data from view (the SQL order is helpful but we will refine it in Java)
+                HttpUrl url = HttpUrl.parse(SUPABASE_BASE_URL + "/rest/v1/distinct_categories")
                         .newBuilder()
+                        .addQueryParameter("select", "category_main")
                         .build();
 
                 Request request = new Request.Builder()
@@ -209,7 +204,20 @@ public class LibraryViewModel extends AndroidViewModel {
                                     strings.add(item.category);
                                 }
                             }
-                            Collections.sort(strings);
+
+                            // --- CUSTOM NATURAL SORTING (1, 2, ... 10) ---
+                            Collections.sort(strings, (s1, s2) -> {
+                                int n1 = extractNumber(s1);
+                                int n2 = extractNumber(s2);
+
+                                if (n1 != -1 && n2 != -1) {
+                                    // Both have numbers, compare numbers numerically
+                                    return Integer.compare(n1, n2);
+                                } else {
+                                    // Fallback to standard string comparison if one doesn't have a number
+                                    return s1.compareToIgnoreCase(s2);
+                                }
+                            });
                         }
                         categoryList.postValue(strings);
                     }
@@ -220,60 +228,82 @@ public class LibraryViewModel extends AndroidViewModel {
         });
     }
 
-    // NEW: Fetch ALL drugs from database
+    // Helper to extract the leading number from strings like "1. Sistem Saluran..."
+    private int extractNumber(String text) {
+        try {
+            if (text == null || text.isEmpty()) return -1;
+
+            // Regex to find digits at the start of the string
+            Matcher matcher = Pattern.compile("^(\\d+)").matcher(text);
+            if (matcher.find()) {
+                return Integer.parseInt(matcher.group(1));
+            }
+            return -1; // No number found
+        } catch (Exception e) {
+            return -1;
+        }
+    }
+
+    // Batch Fetching Implementation
     private void fetchAllSediaanDrugs() {
         if (allDrugsLoaded) return;
 
         CompletableFuture.runAsync(() -> {
+            List<ObatSediaanItem> completeList = new ArrayList<>();
+            int offset = 0;
+            int pageSize = 1000;
+            boolean hasMoreData = true;
+
             try {
-                // Use direct table query instead of search RPC to get ALL records
-                HttpUrl url = HttpUrl.parse(SUPABASE_BASE_URL + "/rest/v1/obat_sediaan")
-                        .newBuilder()
-                        .addQueryParameter("select", "id,name,manufacturer,category_main,category_sub,komposisi,farmakologi,indikasi,dosis,kontraindikasi,perhatian,efek_samping,interaksi_obat,kemasan")
-                        .build();
+                while (hasMoreData) {
+                    HttpUrl url = HttpUrl.parse(SUPABASE_BASE_URL + "/rest/v1/obat_sediaan")
+                            .newBuilder()
+                            .addQueryParameter("select", "id,name,manufacturer,category_main,category_sub,komposisi,farmakologi,indikasi,dosis,kontraindikasi,perhatian,efek_samping,interaksi_obat,kemasan")
+                            .addQueryParameter("order", "name.asc")
+                            .build();
 
-                Request request = new Request.Builder()
-                        .url(url)
-                        .get()
-                        .addHeader("apikey", SUPABASE_ANON_KEY)
-                        .addHeader("Authorization", "Bearer " + SUPABASE_ANON_KEY)
-                        .addHeader("Range", "0-9999") // Request up to 10000 records
-                        .build();
+                    int rangeStart = offset;
+                    int rangeEnd = offset + pageSize - 1;
 
-                Log.d(TAG, "Fetching all drugs from: " + url);
+                    Request request = new Request.Builder()
+                            .url(url)
+                            .get()
+                            .addHeader("apikey", SUPABASE_ANON_KEY)
+                            .addHeader("Authorization", "Bearer " + SUPABASE_ANON_KEY)
+                            .addHeader("Range", rangeStart + "-" + rangeEnd)
+                            .build();
 
-                try (Response response = httpClient.newCall(request).execute()) {
-                    if (response.isSuccessful() && response.body() != null) {
-                        String jsonString = response.body().string();
-                        Type listType = new TypeToken<List<ObatSediaanItem>>(){}.getType();
-                        List<ObatSediaanItem> hasil = gson.fromJson(jsonString, listType);
+                    try (Response response = httpClient.newCall(request).execute()) {
+                        if (response.isSuccessful() && response.body() != null) {
+                            String jsonString = response.body().string();
+                            Type listType = new TypeToken<List<ObatSediaanItem>>(){}.getType();
+                            List<ObatSediaanItem> chunk = gson.fromJson(jsonString, listType);
 
-                        if (hasil != null && !hasil.isEmpty()) {
-                            allSediaanDrugs = hasil;
-                            allDrugsLoaded = true;
-                            Log.d(TAG, "Successfully loaded " + hasil.size() + " drugs");
-
-                            // Apply initial filters
-                            applySearchAndFilters();
+                            if (chunk != null && !chunk.isEmpty()) {
+                                completeList.addAll(chunk);
+                                offset += chunk.size();
+                                if (chunk.size() < pageSize) {
+                                    hasMoreData = false;
+                                }
+                            } else {
+                                hasMoreData = false;
+                            }
                         } else {
-                            Log.w(TAG, "No drugs returned from database");
+                            hasMoreData = false;
                         }
-                    } else {
-                        Log.e(TAG, "Failed to fetch drugs: " + response.code() + " " + response.message());
                     }
                 }
+
+                if (!completeList.isEmpty()) {
+                    allSediaanDrugs = completeList;
+                    allDrugsLoaded = true;
+                    applySearchAndFilters();
+                }
+
             } catch (Exception e) {
-                Log.e(TAG, "Error fetching all drugs: " + e.getMessage(), e);
-                allSediaanDrugs = new ArrayList<>();
-                applySearchAndFilters();
+                Log.e(TAG, "Error fetching all drugs", e);
             }
         });
-    }
-
-    private void fetchGenerikDrugsPlaceholder(String query) {
-        // Placeholder logic - implement similarly to fetchAllSediaanDrugs if needed
-        masterGenerikList = new ArrayList<>();
-        processGenerikList();
     }
 
     private static class CategoryWrapper {
