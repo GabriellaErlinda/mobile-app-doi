@@ -55,7 +55,7 @@
                 android:id="@+id/homeSubtitle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="Asisten kesehatan digital Anda"
+                android:text="Siap membantu Anda mencari informasi obat"
                 android:textSize="14sp"
                 android:textColor="#E0E7FF"
                 android:layout_marginStart="16dp"

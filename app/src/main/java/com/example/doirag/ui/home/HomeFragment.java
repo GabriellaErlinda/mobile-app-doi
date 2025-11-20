@@ -57,13 +57,12 @@ public class HomeFragment extends Fragment {
             binding.chipGroupCategories.addView(chip);
         }
 
-        // ======= Riwayat Pencarian Dummy (CHANGED) =======
+        // ======= Riwayat Pencarian Dummy =======
         String[] history = new String[]{
                 "Paracetamol", "Amoksisilin", "CTM"
         };
         for (String item : history) {
             MaterialCardView card = new MaterialCardView(requireContext());
-            // ... (card styling is the same) ...
             card.setRadius(12);
             card.setStrokeWidth(1);
             card.setStrokeColor(MaterialColors.getColor(card,
@@ -91,7 +90,7 @@ public class HomeFragment extends Fragment {
             card.setLayoutParams(lp);
         }
 
-        // ======= Navigasi (CHANGED) =======
+        // ======= Navigasi =======
 
         // ADDED: Listener for the fake search bar
         binding.inputSearch.setOnClickListener(v -> {
@@ -101,8 +100,7 @@ public class HomeFragment extends Fragment {
         });
 
         binding.cardScan.setOnClickListener(v -> {
-            // "Telusuri Obat" now navigates to the library
-            // This is cleaner than the search bar click, which requests focus
+            // "Telusuri Obat" navigates to the library
             navController.navigate(R.id.nav_library);
         });
 

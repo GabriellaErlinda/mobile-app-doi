@@ -14,12 +14,15 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.doirag.R;
 
-// Ganti nama class menjadi ObatGenerikFragment
+import java.util.List;
+
 public class ObatGenerikFragment extends Fragment {
 
     private RecyclerView recycler;
+    private FastScroller fastScroller;
     private ObatGenerikAdapter adapter;
     private LibraryViewModel viewModel;
+    private LinearLayoutManager layoutManager;
 
     @Nullable
     @Override
@@ -27,7 +30,10 @@ public class ObatGenerikFragment extends Fragment {
         View v = inflater.inflate(R.layout.fragment_list_simple, container, false);
 
         recycler = v.findViewById(R.id.recycler);
-        recycler.setLayoutManager(new LinearLayoutManager(requireContext()));
+        fastScroller = v.findViewById(R.id.fastScroller);
+
+        layoutManager = new LinearLayoutManager(requireContext());
+        recycler.setLayoutManager(layoutManager);
 
         adapter = new ObatGenerikAdapter(item -> {
             // TODO: Handle klik obat generik
@@ -36,11 +42,39 @@ public class ObatGenerikFragment extends Fragment {
 
         viewModel = new ViewModelProvider(requireActivity()).get(LibraryViewModel.class);
 
-        // Meng-observe data generik
         viewModel.getFilteredGenerikDrugs().observe(getViewLifecycleOwner(), generikItems -> {
             adapter.submitList(generikItems);
         });
 
+        // Setup Fast Scroller Logic
+        fastScroller.setListener(section -> {
+            List<ObatGenerikItem> currentList = adapter.getCurrentList();
+            if (currentList == null || currentList.isEmpty()) return;
+
+            for (int i = 0; i < currentList.size(); i++) {
+                String name = currentList.get(i).nama_generik;
+                if (name != null && !name.isEmpty()) {
+                    String firstChar = name.substring(0, 1).toUpperCase();
+
+                    if (section.equals("#")) {
+                        if (Character.isDigit(firstChar.charAt(0))) {
+                            scrollTo(i);
+                            break;
+                        }
+                    } else {
+                        if (firstChar.compareTo(section) >= 0) {
+                            scrollTo(i);
+                            break;
+                        }
+                    }
+                }
+            }
+        });
+
         return v;
+    }
+
+    private void scrollTo(int position) {
+        layoutManager.scrollToPositionWithOffset(position, 0);
     }
 }

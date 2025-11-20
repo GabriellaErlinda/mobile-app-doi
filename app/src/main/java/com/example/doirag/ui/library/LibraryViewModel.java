@@ -15,10 +15,12 @@ import com.google.gson.reflect.TypeToken;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 import okhttp3.HttpUrl;
 import okhttp3.MediaType;
@@ -37,19 +39,21 @@ public class LibraryViewModel extends AndroidViewModel {
     private final String SUPABASE_BASE_URL = "https://htkwoucfxjjthcoifaiq.supabase.co";
     private final String SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh0a3dvdWNmeGpqdGhjb2lmYWlxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI4NTMwMDAsImV4cCI6MjA3ODQyOTAwMH0.6Gk-JfyIFO1vcIieeKmaMPYRjNJuSwQwaVuevItipE4";
 
-    // --- Nama Tabel (Optional reference) ---
-    private final String TABEL_GENERIK = "obat_generik";
-    private final String TABEL_SEDIAAN = "obat_sediaan";
+    // --- Data Storage (Master Lists for Local Filtering) ---
+    private List<ObatGenerikItem> masterGenerikList = new ArrayList<>();
+    private List<ObatSediaanItem> masterSediaanList = new ArrayList<>();
 
     // --- State (Input) ---
     private final MutableLiveData<String> searchQuery = new MutableLiveData<>("");
     private final MutableLiveData<Integer> currentTab = new MutableLiveData<>(1);
 
+    // Filtering & Sorting State
+    private String activeCategoryFilter = null; // null means "All"
+    private boolean isSortAscending = true; // A-Z default
+
     // --- LiveData (Output) ---
     private final MutableLiveData<List<ObatGenerikItem>> filteredGenerikDrugs = new MutableLiveData<>();
     private final MutableLiveData<List<ObatSediaanItem>> filteredSediaanDrugs = new MutableLiveData<>();
-
-    // NEW: LiveData for Dynamic Categories
     private final MutableLiveData<List<String>> categoryList = new MutableLiveData<>();
 
     private static final String TAG = "LibraryViewModel";
@@ -59,10 +63,7 @@ public class LibraryViewModel extends AndroidViewModel {
         this.httpClient = new OkHttpClient();
         this.gson = new Gson();
 
-        // Ambil data obat pertama kali
         fetchData();
-
-        // Ambil daftar kategori untuk filter
         fetchCategories();
     }
 
@@ -71,49 +72,125 @@ public class LibraryViewModel extends AndroidViewModel {
     public void setCurrentTab(int position) {
         if (!Objects.equals(currentTab.getValue(), position)) {
             currentTab.setValue(position);
-            fetchData();
+            // Re-fetch or Re-process is handled implicitly if needed,
+            // but usually lists are independent.
         }
     }
 
     public void setSearchQuery(String query) {
-        // Jangan panggil jika query sama untuk mencegah spam request
         if (!Objects.equals(query, searchQuery.getValue())) {
             searchQuery.setValue(query);
             fetchData();
         }
     }
 
+    // NEW: Apply Sort
+    public void setSortOrder(boolean ascending) {
+        this.isSortAscending = ascending;
+        processSediaanList();
+        processGenerikList();
+    }
+
+    // NEW: Apply Filter
+    public void setCategoryFilter(String category) {
+        this.activeCategoryFilter = category;
+        processSediaanList();
+        // Generik usually doesn't have the same category structure, so we might only filter Sediaan
+    }
+
+    public String getActiveCategoryFilter() {
+        return activeCategoryFilter;
+    }
+
     public LiveData<List<String>> getCategoryList() {
         return categoryList;
     }
 
-    // --- FUNGSI "ROUTER" PENGAMBIL DATA ---
+    public LiveData<List<ObatGenerikItem>> getFilteredGenerikDrugs() {
+        return filteredGenerikDrugs;
+    }
+
+    public LiveData<List<ObatSediaanItem>> getFilteredSediaanDrugs() {
+        return filteredSediaanDrugs;
+    }
+
+    // --- INTERNAL PROCESSING (Sort & Filter) ---
+
+    private void processSediaanList() {
+        if (masterSediaanList == null) return;
+
+        List<ObatSediaanItem> processed = new ArrayList<>();
+
+        // 1. Filter by Category
+        if (activeCategoryFilter != null && !activeCategoryFilter.isEmpty()) {
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+                processed = masterSediaanList.stream()
+                        .filter(item -> item.category_main != null &&
+                                item.category_main.equalsIgnoreCase(activeCategoryFilter))
+                        .collect(Collectors.toList());
+            } else {
+                // Fallback for older Android
+                for (ObatSediaanItem item : masterSediaanList) {
+                    if (item.category_main != null &&
+                            item.category_main.equalsIgnoreCase(activeCategoryFilter)) {
+                        processed.add(item);
+                    }
+                }
+            }
+        } else {
+            processed.addAll(masterSediaanList);
+        }
+
+        // 2. Sort (Alphabetical)
+        Collections.sort(processed, (o1, o2) -> {
+            String s1 = o1.drug_name != null ? o1.drug_name : "";
+            String s2 = o2.drug_name != null ? o2.drug_name : "";
+            if (isSortAscending) {
+                return s1.compareToIgnoreCase(s2);
+            } else {
+                return s2.compareToIgnoreCase(s1);
+            }
+        });
+
+        filteredSediaanDrugs.postValue(processed);
+    }
+
+    private void processGenerikList() {
+        if (masterGenerikList == null) return;
+
+        List<ObatGenerikItem> processed = new ArrayList<>(masterGenerikList);
+
+        // 1. Sort (Alphabetical)
+        Collections.sort(processed, (o1, o2) -> {
+            String s1 = o1.nama_generik != null ? o1.nama_generik : "";
+            String s2 = o2.nama_generik != null ? o2.nama_generik : "";
+            if (isSortAscending) {
+                return s1.compareToIgnoreCase(s2);
+            } else {
+                return s2.compareToIgnoreCase(s1);
+            }
+        });
+
+        filteredGenerikDrugs.postValue(processed);
+    }
+
+    // --- NETWORK CALLS ---
 
     private void fetchData() {
         String query = searchQuery.getValue();
-        Integer tab = currentTab.getValue();
+        // Always fetch both or manage based on tab.
+        // For simplicity, we fetch relevant data.
 
-        if (tab == null) tab = 1; // Default ke Sediaan jika null
+        // Reset master lists slightly to avoid stale data confusion during loading if needed,
+        // but here we keep them to prevent flickering.
 
-        if (tab == 0) {
-            // Tab 0: Obat Generik
-            // Saat ini masih placeholder, nanti Anda bisa buat RPC "search_obat_generik"
-            // dan panggil method fetchGenerikDrugs(query) di sini.
-            Log.d(TAG, "Placeholder: Mengambil data Generik query: " + query);
-            fetchGenerikDrugsPlaceholder(query);
-
-        } else if (tab == 1) {
-            // Tab 1: Obat Sediaan
-            fetchSediaanDrugs(query);
-        }
+        fetchSediaanDrugs(query);
+        fetchGenerikDrugsPlaceholder(query);
     }
-
-    // --- PENGAMBIL DATA: KATEGORI (Untuk Filter Chip) ---
 
     public void fetchCategories() {
         CompletableFuture.runAsync(() -> {
             try {
-                // Memanggil RPC Function: get_unique_categories
                 HttpUrl url = HttpUrl.parse(SUPABASE_BASE_URL + "/rest/v1/rpc/get_unique_categories")
                         .newBuilder()
                         .build();
@@ -128,8 +205,6 @@ public class LibraryViewModel extends AndroidViewModel {
                 try (Response response = httpClient.newCall(request).execute()) {
                     if (response.isSuccessful() && response.body() != null) {
                         String jsonString = response.body().string();
-
-                        // Parse: [{"category": "Analgesik"}, {"category": "Antibiotik"}]
                         Type listType = new TypeToken<List<CategoryWrapper>>(){}.getType();
                         List<CategoryWrapper> rawList = gson.fromJson(jsonString, listType);
 
@@ -140,12 +215,9 @@ public class LibraryViewModel extends AndroidViewModel {
                                     strings.add(item.category);
                                 }
                             }
+                            Collections.sort(strings);
                         }
-
-                        // Update LiveData
                         categoryList.postValue(strings);
-                    } else {
-                        Log.e(TAG, "Gagal ambil kategori: " + response.code());
                     }
                 }
             } catch (Exception e) {
@@ -154,10 +226,7 @@ public class LibraryViewModel extends AndroidViewModel {
         });
     }
 
-    // --- PENGAMBIL DATA: OBAT SEDIAAN ---
-
     private void fetchSediaanDrugs(String query) {
-        Log.d(TAG, "Mengambil data 'Sediaan' dengan RPC... Query: \"" + query + "\"");
         CompletableFuture.runAsync(() -> {
             try {
                 HttpUrl url = HttpUrl.parse(SUPABASE_BASE_URL + "/rest/v1/rpc/search_obat_sediaan")
@@ -166,11 +235,7 @@ public class LibraryViewModel extends AndroidViewModel {
 
                 Map<String, String> bodyMap = Collections.singletonMap("search_term", query);
                 String jsonBody = gson.toJson(bodyMap);
-
-                RequestBody body = RequestBody.create(
-                        jsonBody,
-                        MediaType.get("application/json; charset=utf-8")
-                );
+                RequestBody body = RequestBody.create(jsonBody, MediaType.get("application/json; charset=utf-8"));
 
                 Request request = new Request.Builder()
                         .url(url)
@@ -185,42 +250,32 @@ public class LibraryViewModel extends AndroidViewModel {
                         Type listType = new TypeToken<List<ObatSediaanItem>>(){}.getType();
                         List<ObatSediaanItem> hasil = gson.fromJson(jsonString, listType);
 
-                        Log.d(TAG, "Berhasil! Ditemukan " + (hasil != null ? hasil.size() : 0) + " item sediaan.");
-                        filteredSediaanDrugs.postValue(hasil != null ? hasil : Collections.emptyList());
+                        // Update Master List
+                        masterSediaanList = (hasil != null) ? hasil : new ArrayList<>();
+
+                        // Apply local filters/sort
+                        processSediaanList();
                     } else {
-                        Log.e(TAG, "Request Sediaan Gagal: " + response.code());
-                        filteredSediaanDrugs.postValue(Collections.emptyList());
+                        masterSediaanList = new ArrayList<>();
+                        processSediaanList();
                     }
                 }
             } catch (Exception e) {
                 Log.e(TAG, "Error Sediaan: " + e.getMessage());
-                filteredSediaanDrugs.postValue(Collections.emptyList());
+                masterSediaanList = new ArrayList<>();
+                processSediaanList();
             }
         });
     }
 
-    // --- PENGAMBIL DATA: OBAT GENERIK (Placeholder) ---
-
     private void fetchGenerikDrugsPlaceholder(String query) {
-        // TODO: Implementasi Fetch Generik serupa dengan Sediaan
-        // 1. Buat RPC search_obat_generik di Supabase
-        // 2. Copy paste logic dari fetchSediaanDrugs dan sesuaikan Type token ke List<ObatGenerikItem>
-
-        // Saat ini return list kosong agar UI tidak error
-        filteredGenerikDrugs.postValue(Collections.emptyList());
+        // Placeholder logic
+        masterGenerikList = new ArrayList<>();
+        processGenerikList();
     }
 
-    public LiveData<List<ObatGenerikItem>> getFilteredGenerikDrugs() {
-        return filteredGenerikDrugs;
-    }
-
-    public LiveData<List<ObatSediaanItem>> getFilteredSediaanDrugs() {
-        return filteredSediaanDrugs;
-    }
-
-    // --- Helper Class for Category Parsing ---
     private static class CategoryWrapper {
-        @SerializedName("category_main") // Sesuaikan dengan nama kolom return function SQL Anda
+        @SerializedName("category_main")
         String category;
     }
 }

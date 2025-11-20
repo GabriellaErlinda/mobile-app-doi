@@ -34,15 +34,22 @@
                 android:textColor="#1E293B"
                 android:layout_marginBottom="4dp" />
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Database lengkap informasi obat Indonesia"
-                android:textSize="14sp"
-                android:textColor="#64748B"
-                android:layout_marginBottom="16dp" />
 
         </LinearLayout>
+
+        <!-- Tabs -->
+        <com.google.android.material.tabs.TabLayout
+            android:id="@+id/tabLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:color/white"
+            app:tabIndicatorColor="#2563EB"
+            app:tabIndicatorHeight="3dp"
+            app:tabTextColor="#64748B"
+            app:tabSelectedTextColor="#2563EB"
+            app:tabIndicatorFullWidth="false"
+            app:tabMode="fixed"
+            app:tabTextAppearance="@style/TabTextStyle" />
 
         <!-- Search Bar -->
         <com.google.android.material.card.MaterialCardView
@@ -82,19 +89,7 @@
 
         </com.google.android.material.card.MaterialCardView>
 
-        <!-- Tabs -->
-        <com.google.android.material.tabs.TabLayout
-            android:id="@+id/tabLayout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@android:color/white"
-            app:tabIndicatorColor="#2563EB"
-            app:tabIndicatorHeight="3dp"
-            app:tabTextColor="#64748B"
-            app:tabSelectedTextColor="#2563EB"
-            app:tabIndicatorFullWidth="false"
-            app:tabMode="fixed"
-            app:tabTextAppearance="@style/TabTextStyle" />
+
 
         <!-- Filter and Sort Bar (Will be shown/hidden programmatically) -->
         <HorizontalScrollView
