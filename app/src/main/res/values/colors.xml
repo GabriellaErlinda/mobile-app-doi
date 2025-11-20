@@ -8,4 +8,7 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="color_outline">#F8F8F8</color>
+
+    <!-- Added for splash screen -->
+    <color name="splash_bg">#f3f3f3</color>
 </resources>

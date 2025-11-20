@@ -5,28 +5,26 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.NavigationUI;
-import com.example.doirag.databinding.ActivityMainBinding;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class MainActivity extends AppCompatActivity {
-
-    private ActivityMainBinding binding;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
 
-        binding = ActivityMainBinding.inflate(getLayoutInflater());
-        setContentView(binding.getRoot());
+        // Find BottomNavigationView
+        BottomNavigationView navView = findViewById(R.id.nav_view);
 
-        // 1. Find the NavHostFragment safely
+        // Find the NavHostFragment
         NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.nav_host_fragment_activity_main);
 
         if (navHostFragment != null) {
             NavController navController = navHostFragment.getNavController();
-
-            // 2. Connect Bottom Navigation to the Controller
-            NavigationUI.setupWithNavController(binding.navView, navController);
+            // Connect BottomNavigationView to NavController
+            NavigationUI.setupWithNavController(navView, navController);
         }
     }
 }
