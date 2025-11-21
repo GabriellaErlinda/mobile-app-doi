@@ -1,0 +1,376 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background">
+
+    <!-- Sticky Toolbar -->
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/surface"
+        app:elevation="0dp">
+
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            app:navigationIcon="@drawable/ic_arrow_back"
+            app:navigationIconTint="@color/text_primary"
+            app:title="Detail Obat Generik"
+            app:titleTextColor="@color/text_primary"
+            app:titleCentered="true"/>
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="20dp">
+
+            <!-- Header Section -->
+            <TextView
+                android:id="@+id/tvDrugName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Nama Obat Generik"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                android:textColor="@color/text_primary"
+                android:layout_marginBottom="12dp"/>
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardBrands"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardBackgroundColor="@color/surface"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="1dp"
+                app:strokeWidth="0dp"
+                android:layout_marginBottom="24dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <TextView
+                        android:text="Merek Dagang / Produsen"
+                        android:textStyle="bold"
+                        android:textSize="13sp"
+                        android:textColor="@color/primary"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+
+                    <TextView
+                        android:id="@+id/tvBrands"
+                        android:text="-"
+                        android:textSize="14sp"
+                        android:textColor="@color/text_secondary"
+                        android:layout_marginTop="4dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Dosis Info Card -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardDosis"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardBackgroundColor="@color/surface"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="2dp"
+                app:strokeWidth="0dp"
+                android:layout_marginBottom="16dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <TextView
+                        android:text="💊 Informasi Dosis"
+                        android:textStyle="bold"
+                        android:textColor="@color/primary"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="12dp"/>
+
+                    <!-- Dosis Umum (Wrapped in Section) -->
+                    <LinearLayout
+                        android:id="@+id/sectionDosis"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:layout_marginBottom="12dp">
+                        <TextView
+                            android:text="Dosis Lazim"
+                            android:textStyle="bold"
+                            android:textSize="13sp"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"/>
+                        <TextView
+                            android:id="@+id/tvDosis"
+                            android:text="-"
+                            android:textSize="14sp"
+                            android:textColor="@color/text_secondary"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"/>
+                    </LinearLayout>
+
+                    <!-- Dosis Awal -->
+                    <LinearLayout
+                        android:id="@+id/sectionDosisAwal"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:layout_marginBottom="12dp"
+                        android:visibility="gone">
+                        <TextView
+                            android:text="Dosis Awal (Loading Dose)"
+                            android:textStyle="bold"
+                            android:textSize="13sp"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"/>
+                        <TextView
+                            android:id="@+id/tvDosisAwal"
+                            android:text="-"
+                            android:textSize="14sp"
+                            android:textColor="@color/text_secondary"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"/>
+                    </LinearLayout>
+
+                    <!-- Dosis Pemeliharaan -->
+                    <LinearLayout
+                        android:id="@+id/sectionDosisPemeliharaan"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:visibility="gone">
+                        <TextView
+                            android:text="Dosis Pemeliharaan"
+                            android:textStyle="bold"
+                            android:textSize="13sp"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"/>
+                        <TextView
+                            android:id="@+id/tvDosisPemeliharaan"
+                            android:text="-"
+                            android:textSize="14sp"
+                            android:textColor="@color/text_secondary"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"/>
+                    </LinearLayout>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Safety Info Card -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardSafety"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardBackgroundColor="#FFF4F4"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="0dp"
+                app:strokeColor="#FECACA"
+                app:strokeWidth="1dp"
+                android:layout_marginBottom="16dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <TextView
+                        android:text="⚠️ Peringatan Keamanan"
+                        android:textStyle="bold"
+                        android:textColor="#DC2626"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="12dp"/>
+
+                    <LinearLayout
+                        android:id="@+id/sectionKontraindikasi"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:layout_marginBottom="12dp">
+                        <TextView
+                            android:text="Kontraindikasi"
+                            android:textStyle="bold"
+                            android:textSize="13sp"
+                            android:textColor="#7F1D1D"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"/>
+                        <TextView
+                            android:id="@+id/tvKontraindikasi"
+                            android:text="-"
+                            android:textSize="14sp"
+                            android:textColor="#450A0A"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"/>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/sectionEfekSamping"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:layout_marginBottom="12dp">
+                        <TextView
+                            android:text="Efek Samping"
+                            android:textStyle="bold"
+                            android:textSize="13sp"
+                            android:textColor="#7F1D1D"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"/>
+                        <TextView
+                            android:id="@+id/tvEfekSamping"
+                            android:text="-"
+                            android:textSize="14sp"
+                            android:textColor="#450A0A"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"/>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/sectionPerhatian"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+                        <TextView
+                            android:text="Perhatian"
+                            android:textStyle="bold"
+                            android:textSize="13sp"
+                            android:textColor="#7F1D1D"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"/>
+                        <TextView
+                            android:id="@+id/tvPerhatian"
+                            android:text="-"
+                            android:textSize="14sp"
+                            android:textColor="#450A0A"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"/>
+                    </LinearLayout>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Additional Info Card -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardOthers"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardBackgroundColor="@color/surface"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="2dp"
+                app:strokeWidth="0dp"
+                android:layout_marginBottom="32dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <LinearLayout
+                        android:id="@+id/sectionInteraksi"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:layout_marginBottom="12dp">
+                        <TextView
+                            android:text="Interaksi Obat"
+                            android:textStyle="bold"
+                            android:textSize="13sp"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"/>
+                        <TextView
+                            android:id="@+id/tvInteraksi"
+                            android:text="-"
+                            android:textSize="14sp"
+                            android:textColor="@color/text_secondary"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"/>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/sectionIndikasi"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:layout_marginBottom="12dp">
+                        <TextView
+                            android:text="Indikasi"
+                            android:textStyle="bold"
+                            android:textSize="13sp"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"/>
+                        <TextView
+                            android:id="@+id/tvIndikasi"
+                            android:text="-"
+                            android:textSize="14sp"
+                            android:textColor="@color/text_secondary"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"/>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/sectionFarmakologi"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:layout_marginBottom="12dp">
+                        <TextView
+                            android:text="Farmakologi"
+                            android:textStyle="bold"
+                            android:textSize="13sp"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"/>
+                        <TextView
+                            android:id="@+id/tvFarmakologi"
+                            android:text="-"
+                            android:textSize="14sp"
+                            android:textColor="@color/text_secondary"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"/>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/sectionExtras"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+                        <TextView
+                            android:text="Informasi Tambahan (Extras)"
+                            android:textStyle="bold"
+                            android:textSize="13sp"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"/>
+                        <TextView
+                            android:id="@+id/tvExtras"
+                            android:text="-"
+                            android:textSize="14sp"
+                            android:textColor="@color/text_secondary"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"/>
+                    </LinearLayout>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

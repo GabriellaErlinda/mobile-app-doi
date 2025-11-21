@@ -34,7 +34,8 @@ public class ObatGenerikAdapter extends ListAdapter<ObatGenerikItem, ObatGenerik
                 }
                 @Override
                 public boolean areContentsTheSame(@NonNull ObatGenerikItem oldItem, @NonNull ObatGenerikItem newItem) {
-                    return oldItem.equals(newItem);
+                    // Cek beberapa field penting untuk update UI
+                    return Objects.equals(oldItem.nama_generik, newItem.nama_generik);
                 }
             };
 
@@ -60,9 +61,14 @@ public class ObatGenerikAdapter extends ListAdapter<ObatGenerikItem, ObatGenerik
         }
 
         void bind(ObatGenerikItem d) {
-            // TODO: ganti data dari 'obat_generik'
             textName.setText(d.nama_generik);
-            textMeta.setText(d.deskripsi_singkat);
+
+            // Tampilkan daftar merek sebagai subtitle
+            if (d.nama_obat_dan_produsen != null && !d.nama_obat_dan_produsen.isEmpty()) {
+                textMeta.setText(d.nama_obat_dan_produsen);
+            } else {
+                textMeta.setText("Obat Generik");
+            }
         }
     }
 }

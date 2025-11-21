@@ -9,6 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -35,9 +36,16 @@ public class ObatGenerikFragment extends Fragment {
         layoutManager = new LinearLayoutManager(requireContext());
         recycler.setLayoutManager(layoutManager);
 
+        // UPDATE LISTENER DISINI
         adapter = new ObatGenerikAdapter(item -> {
-            // TODO: Handle klik obat generik
+            Bundle bundle = new Bundle();
+            bundle.putSerializable("drug_item", item);
+
+            // Navigasi ke Detail Generik
+            Navigation.findNavController(requireView())
+                    .navigate(R.id.nav_drug_detail_generik, bundle);
         });
+
         recycler.setAdapter(adapter);
 
         viewModel = new ViewModelProvider(requireActivity()).get(LibraryViewModel.class);
@@ -46,7 +54,6 @@ public class ObatGenerikFragment extends Fragment {
             adapter.submitList(generikItems);
         });
 
-        // Setup Fast Scroller Logic
         fastScroller.setListener(section -> {
             List<ObatGenerikItem> currentList = adapter.getCurrentList();
             if (currentList == null || currentList.isEmpty()) return;

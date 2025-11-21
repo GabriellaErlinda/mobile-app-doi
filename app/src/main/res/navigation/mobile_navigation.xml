@@ -33,4 +33,14 @@
             app:argType="com.example.doirag.ui.library.ObatSediaanItem" />
     </fragment>
 
+    <fragment
+        android:id="@+id/nav_drug_detail_generik"
+        android:name="com.example.doirag.ui.library.DetailObatGenerikFragment"
+        android:label="Detail Obat Generik"
+        tools:layout="@layout/fragment_detail_obat_generik">
+        <argument
+            android:name="drug_item"
+            app:argType="com.example.doirag.ui.library.ObatGenerikItem" />
+    </fragment>
+
 </navigation>

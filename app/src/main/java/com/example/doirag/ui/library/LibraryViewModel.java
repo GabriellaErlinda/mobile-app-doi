@@ -33,19 +33,19 @@ public class LibraryViewModel extends AndroidViewModel {
 
     // --- Config Supabase ---
     private final String SUPABASE_BASE_URL = "https://htkwoucfxjjthcoifaiq.supabase.co";
+    // PASTIKAN API KEY INI BENAR DAN MASIH VALID
     private final String SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh0a3dvdWNmeGpqdGhjb2lmYWlxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI4NTMwMDAsImV4cCI6MjA3ODQyOTAwMH0.6Gk-JfyIFO1vcIieeKmaMPYRjNJuSwQwaVuevItipE4";
 
     // --- Data Storage ---
     private List<ObatGenerikItem> masterGenerikList = new ArrayList<>();
-    private List<ObatSediaanItem> allSediaanDrugs = new ArrayList<>(); // Store ALL drugs
+    private List<ObatSediaanItem> allSediaanDrugs = new ArrayList<>();
 
     // --- State (Input) ---
     private final MutableLiveData<String> searchQuery = new MutableLiveData<>("");
     private final MutableLiveData<Integer> currentTab = new MutableLiveData<>(1);
 
-    // Filtering & Sorting State
-    private String activeCategoryFilter = null; // null means "All"
-    private boolean isSortAscending = true; // A-Z default
+    private String activeCategoryFilter = null;
+    private boolean isSortAscending = true;
 
     // --- LiveData (Output) ---
     private final MutableLiveData<List<ObatGenerikItem>> filteredGenerikDrugs = new MutableLiveData<>();
@@ -53,7 +53,8 @@ public class LibraryViewModel extends AndroidViewModel {
     private final MutableLiveData<List<String>> categoryList = new MutableLiveData<>();
 
     private static final String TAG = "LibraryViewModel";
-    private boolean allDrugsLoaded = false;
+    private boolean allSediaanLoaded = false;
+    private boolean allGenerikLoaded = false; // Flag baru
 
     public LibraryViewModel(@NonNull Application application) {
         super(application);
@@ -62,6 +63,7 @@ public class LibraryViewModel extends AndroidViewModel {
 
         // Load Data on initialization
         fetchAllSediaanDrugs();
+        fetchAllGenerikDrugs(); // PANGGIL FUNGSI BARU INI
         fetchCategories();
     }
 
@@ -110,64 +112,78 @@ public class LibraryViewModel extends AndroidViewModel {
     // --- LOGIC FILTERING & SORTING ---
 
     private void applySearchAndFilters() {
-        if (allSediaanDrugs.isEmpty()) return;
+        // Logic untuk Obat Sediaan (Tab 2)
+        if (!allSediaanDrugs.isEmpty()) {
+            String query = searchQuery.getValue();
+            List<ObatSediaanItem> processed = new ArrayList<>();
+
+            // 1. Apply Search
+            if (query != null && !query.trim().isEmpty()) {
+                String lowerQuery = query.toLowerCase().trim();
+                for (ObatSediaanItem item : allSediaanDrugs) {
+                    if ((item.drug_name != null && item.drug_name.toLowerCase().contains(lowerQuery)) ||
+                            (item.manufacturer != null && item.manufacturer.toLowerCase().contains(lowerQuery)) ||
+                            (item.category_main != null && item.category_main.toLowerCase().contains(lowerQuery)) ||
+                            (item.category_sub != null && item.category_sub.toLowerCase().contains(lowerQuery))) {
+                        processed.add(item);
+                    }
+                }
+            } else {
+                processed.addAll(allSediaanDrugs);
+            }
+
+            // 2. Apply Category Filter
+            if (activeCategoryFilter != null && !activeCategoryFilter.isEmpty()) {
+                List<ObatSediaanItem> categoryFiltered = new ArrayList<>();
+                for (ObatSediaanItem item : processed) {
+                    if (item.category_main != null &&
+                            item.category_main.equalsIgnoreCase(activeCategoryFilter)) {
+                        categoryFiltered.add(item);
+                    }
+                }
+                processed = categoryFiltered;
+            }
+
+            // 3. Sort
+            Collections.sort(processed, (o1, o2) -> {
+                String s1 = o1.drug_name != null ? o1.drug_name : "";
+                String s2 = o2.drug_name != null ? o2.drug_name : "";
+                return isSortAscending ? s1.compareToIgnoreCase(s2) : s2.compareToIgnoreCase(s1);
+            });
+
+            filteredSediaanDrugs.postValue(processed);
+        }
+
+        // Panggil juga update untuk Generik agar search bar bekerja di kedua tab
+        processGenerikList();
+    }
+
+    private void processGenerikList() {
+        if (masterGenerikList == null || masterGenerikList.isEmpty()) return;
 
         String query = searchQuery.getValue();
-        List<ObatSediaanItem> processed = new ArrayList<>();
+        List<ObatGenerikItem> processed = new ArrayList<>();
 
-        // 1. Apply Search
+        // 1. Apply Search (Nama Generik atau Merek)
         if (query != null && !query.trim().isEmpty()) {
             String lowerQuery = query.toLowerCase().trim();
-            for (ObatSediaanItem item : allSediaanDrugs) {
-                if ((item.drug_name != null && item.drug_name.toLowerCase().contains(lowerQuery)) ||
-                        (item.manufacturer != null && item.manufacturer.toLowerCase().contains(lowerQuery)) ||
-                        (item.category_main != null && item.category_main.toLowerCase().contains(lowerQuery)) ||
-                        (item.category_sub != null && item.category_sub.toLowerCase().contains(lowerQuery))) {
+            for (ObatGenerikItem item : masterGenerikList) {
+                boolean matchName = item.nama_generik != null && item.nama_generik.toLowerCase().contains(lowerQuery);
+                boolean matchBrand = item.nama_obat_dan_produsen != null && item.nama_obat_dan_produsen.toLowerCase().contains(lowerQuery);
+
+                if (matchName || matchBrand) {
                     processed.add(item);
                 }
             }
         } else {
-            processed.addAll(allSediaanDrugs);
+            processed.addAll(masterGenerikList);
         }
 
-        // 2. Apply Category Filter
-        if (activeCategoryFilter != null && !activeCategoryFilter.isEmpty()) {
-            List<ObatSediaanItem> categoryFiltered = new ArrayList<>();
-            for (ObatSediaanItem item : processed) {
-                if (item.category_main != null &&
-                        item.category_main.equalsIgnoreCase(activeCategoryFilter)) {
-                    categoryFiltered.add(item);
-                }
-            }
-            processed = categoryFiltered;
-        }
-
-        // 3. Sort
-        Collections.sort(processed, (o1, o2) -> {
-            String s1 = o1.drug_name != null ? o1.drug_name : "";
-            String s2 = o2.drug_name != null ? o2.drug_name : "";
-            if (isSortAscending) {
-                return s1.compareToIgnoreCase(s2);
-            } else {
-                return s2.compareToIgnoreCase(s1);
-            }
-        });
-
-        filteredSediaanDrugs.postValue(processed);
-    }
-
-    private void processGenerikList() {
-        if (masterGenerikList == null) return;
-
-        List<ObatGenerikItem> processed = new ArrayList<>(masterGenerikList);
+        // 2. Sort
         Collections.sort(processed, (o1, o2) -> {
             String s1 = o1.nama_generik != null ? o1.nama_generik : "";
             String s2 = o2.nama_generik != null ? o2.nama_generik : "";
-            if (isSortAscending) {
-                return s1.compareToIgnoreCase(s2);
-            } else {
-                return s2.compareToIgnoreCase(s1);
-            }
+            return isSortAscending ? s1.compareToIgnoreCase(s2) : s2.compareToIgnoreCase(s1);
         });
 
         filteredGenerikDrugs.postValue(processed);
@@ -175,10 +191,10 @@ public class LibraryViewModel extends AndroidViewModel {
 
     // --- NETWORK CALLS ---
 
+    // ... (fetchCategories tetap sama) ...
     public void fetchCategories() {
         CompletableFuture.runAsync(() -> {
             try {
-                // Get data from view (the SQL order is helpful but we will refine it in Java)
                 HttpUrl url = HttpUrl.parse(SUPABASE_BASE_URL + "/rest/v1/distinct_categories")
                         .newBuilder()
                         .addQueryParameter("select", "category_main")
@@ -204,19 +220,11 @@ public class LibraryViewModel extends AndroidViewModel {
                                     strings.add(item.category);
                                 }
                             }
-
-                            // --- CUSTOM NATURAL SORTING (1, 2, ... 10) ---
                             Collections.sort(strings, (s1, s2) -> {
                                 int n1 = extractNumber(s1);
                                 int n2 = extractNumber(s2);
-
-                                if (n1 != -1 && n2 != -1) {
-                                    // Both have numbers, compare numbers numerically
-                                    return Integer.compare(n1, n2);
-                                } else {
-                                    // Fallback to standard string comparison if one doesn't have a number
-                                    return s1.compareToIgnoreCase(s2);
-                                }
+                                if (n1 != -1 && n2 != -1) return Integer.compare(n1, n2);
+                                else return s1.compareToIgnoreCase(s2);
                             });
                         }
                         categoryList.postValue(strings);
@@ -228,25 +236,86 @@ public class LibraryViewModel extends AndroidViewModel {
         });
     }
 
-    // Helper to extract the leading number from strings like "1. Sistem Saluran..."
+    // Implementasi Fetch Obat Generik
+    private void fetchAllGenerikDrugs() {
+        if (allGenerikLoaded) return;
+
+        CompletableFuture.runAsync(() -> {
+            List<ObatGenerikItem> completeList = new ArrayList<>();
+            int offset = 0;
+            int pageSize = 1000;
+            boolean hasMoreData = true;
+
+            try {
+                while (hasMoreData) {
+                    // Endpoint: tabel 'obat_generik'
+                    HttpUrl url = HttpUrl.parse(SUPABASE_BASE_URL + "/rest/v1/obat_generik")
+                            .newBuilder()
+                            .addQueryParameter("select", "*") // Ambil semua kolom termasuk extras
+                            .addQueryParameter("order", "name.asc")
+                            .build();
+
+                    int rangeStart = offset;
+                    int rangeEnd = offset + pageSize - 1;
+
+                    Request request = new Request.Builder()
+                            .url(url)
+                            .get()
+                            .addHeader("apikey", SUPABASE_ANON_KEY)
+                            .addHeader("Authorization", "Bearer " + SUPABASE_ANON_KEY)
+                            .addHeader("Range", rangeStart + "-" + rangeEnd)
+                            .build();
+
+                    try (Response response = httpClient.newCall(request).execute()) {
+                        if (response.isSuccessful() && response.body() != null) {
+                            String jsonString = response.body().string();
+                            Type listType = new TypeToken<List<ObatGenerikItem>>(){}.getType();
+                            List<ObatGenerikItem> chunk = gson.fromJson(jsonString, listType);
+
+                            if (chunk != null && !chunk.isEmpty()) {
+                                completeList.addAll(chunk);
+                                offset += chunk.size();
+                                if (chunk.size() < pageSize) {
+                                    hasMoreData = false;
+                                }
+                            } else {
+                                hasMoreData = false;
+                            }
+                        } else {
+                            hasMoreData = false;
+                            Log.e(TAG, "Error fetching Generik: " + response.code());
+                        }
+                    }
+                }
+
+                if (!completeList.isEmpty()) {
+                    masterGenerikList = completeList;
+                    allGenerikLoaded = true;
+                    processGenerikList(); // Update LiveData
+                }
+
+            } catch (Exception e) {
+                Log.e(TAG, "Error fetching all generik drugs", e);
+            }
+        });
+    }
+
+    // ... (fetchAllSediaanDrugs dan helper lain tetap sama) ...
     private int extractNumber(String text) {
         try {
             if (text == null || text.isEmpty()) return -1;
-
-            // Regex to find digits at the start of the string
             Matcher matcher = Pattern.compile("^(\\d+)").matcher(text);
             if (matcher.find()) {
                 return Integer.parseInt(matcher.group(1));
             }
-            return -1; // No number found
+            return -1;
         } catch (Exception e) {
             return -1;
         }
     }
 
-    // Batch Fetching Implementation
     private void fetchAllSediaanDrugs() {
-        if (allDrugsLoaded) return;
+        if (allSediaanLoaded) return;
 
         CompletableFuture.runAsync(() -> {
             List<ObatSediaanItem> completeList = new ArrayList<>();
@@ -296,7 +365,7 @@ public class LibraryViewModel extends AndroidViewModel {
 
                 if (!completeList.isEmpty()) {
                     allSediaanDrugs = completeList;
-                    allDrugsLoaded = true;
+                    allSediaanLoaded = true;
                     applySearchAndFilters();
                 }
 
