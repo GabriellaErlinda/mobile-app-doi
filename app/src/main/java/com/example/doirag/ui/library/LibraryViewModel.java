@@ -8,6 +8,9 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
+// Import the generated BuildConfig class
+import com.example.doirag.BuildConfig;
+
 import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
 import com.google.gson.reflect.TypeToken;
@@ -32,9 +35,9 @@ public class LibraryViewModel extends AndroidViewModel {
     private final Gson gson;
 
     // --- Config Supabase ---
-    private final String SUPABASE_BASE_URL = "https://htkwoucfxjjthcoifaiq.supabase.co";
-    // PASTIKAN API KEY INI BENAR DAN MASIH VALID
-    private final String SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh0a3dvdWNmeGpqdGhjb2lmYWlxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI4NTMwMDAsImV4cCI6MjA3ODQyOTAwMH0.6Gk-JfyIFO1vcIieeKmaMPYRjNJuSwQwaVuevItipE4";
+    // Access keys from BuildConfig (Secure)
+    private final String SUPABASE_BASE_URL = BuildConfig.SUPABASE_URL;
+    private final String SUPABASE_ANON_KEY = BuildConfig.SUPABASE_ANON_KEY;
 
     // --- Data Storage ---
     private List<ObatGenerikItem> masterGenerikList = new ArrayList<>();
@@ -54,7 +57,7 @@ public class LibraryViewModel extends AndroidViewModel {
 
     private static final String TAG = "LibraryViewModel";
     private boolean allSediaanLoaded = false;
-    private boolean allGenerikLoaded = false; // Flag baru
+    private boolean allGenerikLoaded = false;
 
     public LibraryViewModel(@NonNull Application application) {
         super(application);
@@ -63,7 +66,7 @@ public class LibraryViewModel extends AndroidViewModel {
 
         // Load Data on initialization
         fetchAllSediaanDrugs();
-        fetchAllGenerikDrugs(); // PANGGIL FUNGSI BARU INI
+        fetchAllGenerikDrugs();
         fetchCategories();
     }
 
@@ -191,10 +194,10 @@ public class LibraryViewModel extends AndroidViewModel {
 
     // --- NETWORK CALLS ---
 
-    // ... (fetchCategories tetap sama) ...
     public void fetchCategories() {
         CompletableFuture.runAsync(() -> {
             try {
+                // Get data from view (the SQL order is helpful but we will refine it in Java)
                 HttpUrl url = HttpUrl.parse(SUPABASE_BASE_URL + "/rest/v1/distinct_categories")
                         .newBuilder()
                         .addQueryParameter("select", "category_main")
@@ -220,11 +223,17 @@ public class LibraryViewModel extends AndroidViewModel {
                                     strings.add(item.category);
                                 }
                             }
+
+                            // --- CUSTOM NATURAL SORTING (1, 2, ... 10) ---
                             Collections.sort(strings, (s1, s2) -> {
                                 int n1 = extractNumber(s1);
                                 int n2 = extractNumber(s2);
-                                if (n1 != -1 && n2 != -1) return Integer.compare(n1, n2);
-                                else return s1.compareToIgnoreCase(s2);
+
+                                if (n1 != -1 && n2 != -1) {
+                                    return Integer.compare(n1, n2);
+                                } else {
+                                    return s1.compareToIgnoreCase(s2);
+                                }
                             });
                         }
                         categoryList.postValue(strings);
@@ -236,84 +245,23 @@ public class LibraryViewModel extends AndroidViewModel {
         });
     }
 
-    // Implementasi Fetch Obat Generik
-    private void fetchAllGenerikDrugs() {
-        if (allGenerikLoaded) return;
-
-        CompletableFuture.runAsync(() -> {
-            List<ObatGenerikItem> completeList = new ArrayList<>();
-            int offset = 0;
-            int pageSize = 1000;
-            boolean hasMoreData = true;
-
-            try {
-                while (hasMoreData) {
-                    // Endpoint: tabel 'obat_generik'
-                    HttpUrl url = HttpUrl.parse(SUPABASE_BASE_URL + "/rest/v1/obat_generik")
-                            .newBuilder()
-                            .addQueryParameter("select", "*") // Ambil semua kolom termasuk extras
-                            .addQueryParameter("order", "name.asc")
-                            .build();
-
-                    int rangeStart = offset;
-                    int rangeEnd = offset + pageSize - 1;
-
-                    Request request = new Request.Builder()
-                            .url(url)
-                            .get()
-                            .addHeader("apikey", SUPABASE_ANON_KEY)
-                            .addHeader("Authorization", "Bearer " + SUPABASE_ANON_KEY)
-                            .addHeader("Range", rangeStart + "-" + rangeEnd)
-                            .build();
-
-                    try (Response response = httpClient.newCall(request).execute()) {
-                        if (response.isSuccessful() && response.body() != null) {
-                            String jsonString = response.body().string();
-                            Type listType = new TypeToken<List<ObatGenerikItem>>(){}.getType();
-                            List<ObatGenerikItem> chunk = gson.fromJson(jsonString, listType);
-
-                            if (chunk != null && !chunk.isEmpty()) {
-                                completeList.addAll(chunk);
-                                offset += chunk.size();
-                                if (chunk.size() < pageSize) {
-                                    hasMoreData = false;
-                                }
-                            } else {
-                                hasMoreData = false;
-                            }
-                        } else {
-                            hasMoreData = false;
-                            Log.e(TAG, "Error fetching Generik: " + response.code());
-                        }
-                    }
-                }
-
-                if (!completeList.isEmpty()) {
-                    masterGenerikList = completeList;
-                    allGenerikLoaded = true;
-                    processGenerikList(); // Update LiveData
-                }
-
-            } catch (Exception e) {
-                Log.e(TAG, "Error fetching all generik drugs", e);
-            }
-        });
-    }
-
-    // ... (fetchAllSediaanDrugs dan helper lain tetap sama) ...
+    // Helper to extract the leading number from strings like "1. Sistem Saluran..."
     private int extractNumber(String text) {
         try {
             if (text == null || text.isEmpty()) return -1;
+
+            // Regex to find digits at the start of the string
             Matcher matcher = Pattern.compile("^(\\d+)").matcher(text);
             if (matcher.find()) {
                 return Integer.parseInt(matcher.group(1));
             }
-            return -1;
+            return -1; // No number found
         } catch (Exception e) {
             return -1;
         }
     }
 
+    // Batch Fetching Implementation
     private void fetchAllSediaanDrugs() {
         if (allSediaanLoaded) return;
 
@@ -371,6 +319,68 @@ public class LibraryViewModel extends AndroidViewModel {
 
             } catch (Exception e) {
                 Log.e(TAG, "Error fetching all drugs", e);
+            }
+        });
+    }
+
+    private void fetchAllGenerikDrugs() {
+        if (allGenerikLoaded) return;
+
+        CompletableFuture.runAsync(() -> {
+            List<ObatGenerikItem> completeList = new ArrayList<>();
+            int offset = 0;
+            int pageSize = 1000;
+            boolean hasMoreData = true;
+
+            try {
+                while (hasMoreData) {
+                    HttpUrl url = HttpUrl.parse(SUPABASE_BASE_URL + "/rest/v1/obat_generik")
+                            .newBuilder()
+                            .addQueryParameter("select", "*")
+                            .addQueryParameter("order", "name.asc")
+                            .build();
+
+                    int rangeStart = offset;
+                    int rangeEnd = offset + pageSize - 1;
+
+                    Request request = new Request.Builder()
+                            .url(url)
+                            .get()
+                            .addHeader("apikey", SUPABASE_ANON_KEY)
+                            .addHeader("Authorization", "Bearer " + SUPABASE_ANON_KEY)
+                            .addHeader("Range", rangeStart + "-" + rangeEnd)
+                            .build();
+
+                    try (Response response = httpClient.newCall(request).execute()) {
+                        if (response.isSuccessful() && response.body() != null) {
+                            String jsonString = response.body().string();
+                            Type listType = new TypeToken<List<ObatGenerikItem>>(){}.getType();
+                            List<ObatGenerikItem> chunk = gson.fromJson(jsonString, listType);
+
+                            if (chunk != null && !chunk.isEmpty()) {
+                                completeList.addAll(chunk);
+                                offset += chunk.size();
+                                if (chunk.size() < pageSize) {
+                                    hasMoreData = false;
+                                }
+                            } else {
+                                hasMoreData = false;
+                            }
+                        } else {
+                            hasMoreData = false;
+                            Log.e(TAG, "Error fetching Generik: " + response.code());
+                        }
+                    }
+                }
+
+                if (!completeList.isEmpty()) {
+                    masterGenerikList = completeList;
+                    allGenerikLoaded = true;
+                    processGenerikList();
+                }
+
+            } catch (Exception e) {
+                Log.e(TAG, "Error fetching all generik drugs", e);
             }
         });
     }

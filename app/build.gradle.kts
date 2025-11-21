@@ -1,5 +1,24 @@
+import java.util.Properties
+import java.io.FileInputStream
+
 plugins {
     alias(libs.plugins.android.application)
+}
+
+// Helper function to safely load local.properties
+fun getLocalProperty(key: String): String {
+    val properties = Properties()
+    val localPropertiesFile = rootProject.file("local.properties")
+
+    if (localPropertiesFile.exists()) {
+        try {
+            properties.load(FileInputStream(localPropertiesFile))
+        } catch (e: Exception) {
+            println("Warning: Could not load local.properties")
+        }
+    }
+
+    return properties.getProperty(key) ?: ""
 }
 
 android {
@@ -14,6 +33,20 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        // --- INJECT SECRETS INTO BUILDCONFIG ---
+        // 1. Read values and TRIM whitespace
+        val supabaseUrl = getLocalProperty("SUPABASE_URL").trim()
+        val supabaseKey = getLocalProperty("SUPABASE_ANON_KEY").trim()
+
+        // 2. Wrap in escaped quotes for Java String syntax: "value"
+        //    If value is missing, default to empty string: ""
+        val urlValue = if (supabaseUrl.isNotEmpty()) "\"$supabaseUrl\"" else "\"\""
+        val keyValue = if (supabaseKey.isNotEmpty()) "\"$supabaseKey\"" else "\"\""
+
+        // 3. Inject fields
+        buildConfigField("String", "SUPABASE_URL", urlValue)
+        buildConfigField("String", "SUPABASE_ANON_KEY", keyValue)
     }
 
     buildTypes {
@@ -31,6 +64,7 @@ android {
     }
     buildFeatures {
         viewBinding = true
+        buildConfig = true
     }
 }
 
@@ -52,7 +86,7 @@ dependencies {
     implementation(libs.navigation.fragment)
     implementation(libs.navigation.ui)
 
-    // Material Design 3 - CRITICAL: Must be version 1.11.0 or higher
+    // Material Design 3
     implementation("com.google.android.material:material:1.11.0")
 
     // RecyclerView
