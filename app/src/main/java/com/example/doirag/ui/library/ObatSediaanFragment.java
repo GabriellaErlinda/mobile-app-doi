@@ -4,87 +4,80 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
-import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.doirag.R;
-
+import java.util.ArrayList;
 import java.util.List;
 
 public class ObatSediaanFragment extends Fragment {
 
-    private RecyclerView recycler;
-    private FastScroller fastScroller;
-    private ObatSediaanAdapter adapter;
-    private LibraryViewModel viewModel;
-    private LinearLayoutManager layoutManager;
+    private RecyclerView recyclerView;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_list_simple, container, false);
 
-        recycler = v.findViewById(R.id.recycler);
-        fastScroller = v.findViewById(R.id.fastScroller);
+        recyclerView = v.findViewById(R.id.recycler);
 
-        layoutManager = new LinearLayoutManager(requireContext());
-        recycler.setLayoutManager(layoutManager);
+        // Sembunyikan elemen layout lama yang tidak terpakai di halaman menu ini
+        if (v.findViewById(R.id.fastScroller) != null)
+            v.findViewById(R.id.fastScroller).setVisibility(View.GONE);
+        if (v.findViewById(R.id.filterContainer) != null)
+            v.findViewById(R.id.filterContainer).setVisibility(View.GONE);
 
-        adapter = new ObatSediaanAdapter(item -> {
-            // Create bundle with the item
-            Bundle bundle = new Bundle();
-            bundle.putSerializable("drug_item", item);
+        // Gunakan Grid 2 Kolom
+        recyclerView.setLayoutManager(new GridLayoutManager(requireContext(), 2));
 
-            // Navigate to Detail Page
-            Navigation.findNavController(requireView())
-                    .navigate(R.id.nav_drug_detail, bundle);
-        });
+        // Ambil Data Kategori yang sudah disesuaikan dengan Database
+        List<CategoryItem> categories = getCategories();
 
-        recycler.setAdapter(adapter);
+        // Setup Adapter
+        CategoryAdapter adapter = new CategoryAdapter(categories, (filterValue, pageTitle) -> {
+            Bundle args = new Bundle();
+            // Masukkan data untuk dikirim ke ObatSediaanListFragment
+            args.putString("category_filter", filterValue); // String persis database
+            args.putString("page_title", pageTitle);       // Judul pendek (cth: "PERNAFASAN")
 
-        viewModel = new ViewModelProvider(requireActivity()).get(LibraryViewModel.class);
-
-        viewModel.getFilteredSediaanDrugs().observe(getViewLifecycleOwner(), sediaanItems -> {
-            adapter.submitList(sediaanItems);
-        });
-
-        // Setup Fast Scroller Logic
-        fastScroller.setListener(section -> {
-            List<ObatSediaanItem> currentList = adapter.getCurrentList();
-            if (currentList == null || currentList.isEmpty()) return;
-
-            for (int i = 0; i < currentList.size(); i++) {
-                String name = currentList.get(i).drug_name;
-                if (name != null && !name.isEmpty()) {
-                    String firstChar = name.substring(0, 1).toUpperCase();
-
-                    if (section.equals("#")) {
-                        // Check if it starts with a digit
-                        if (Character.isDigit(firstChar.charAt(0))) {
-                            scrollTo(i);
-                            break;
-                        }
-                    } else {
-                        // Check if the first character is >= the selected section
-                        if (firstChar.compareTo(section) >= 0) {
-                            scrollTo(i);
-                            break;
-                        }
-                    }
-                }
+            try {
+                // Navigasi ke List Fragment
+                Navigation.findNavController(requireActivity(), R.id.nav_host_fragment_activity_main)
+                        .navigate(R.id.nav_sediaan_list, args);
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         });
+
+        recyclerView.setAdapter(adapter);
 
         return v;
     }
 
-    private void scrollTo(int position) {
-        layoutManager.scrollToPositionWithOffset(position, 0);
+    private List<CategoryItem> getCategories() {
+        List<CategoryItem> list = new ArrayList<>();
+        list.add(new CategoryItem("SEMUA KATEGORI", null, R.drawable.ic_all_category));
+        list.add(new CategoryItem("PERNAFASAN", "1. Sistem Saluran Pernafasan", R.drawable.ic_pernapasan));
+        list.add(new CategoryItem("KARDIOVASKULER", "2. Sistem Kardiovaskuler", R.drawable.ic_kardiovaskular));
+        list.add(new CategoryItem("PENCERNAAN", "3. Sistem Saluran Cerna", R.drawable.ic_pencernaan));
+        list.add(new CategoryItem("SARAF & OTOT", "4. Sistem Saraf dan Otot", R.drawable.ic_saraf_otot));
+        list.add(new CategoryItem("KEMIH & KELAMIN", "5. Kemih dan Kelamin", R.drawable.ic_kemih));
+        list.add(new CategoryItem("METABOLISME", "6. Sistem Metabolisme", R.drawable.ic_metabolisme));
+        list.add(new CategoryItem("IMUNOLOGI & VAKSIN", "7. Sistem Imunologi, Vaksin dan Imunosera", R.drawable.ic_imun));
+        list.add(new CategoryItem("ANTIBIOTIKA", "8. Anti Biotika dll", R.drawable.ic_antibiotika));
+        list.add(new CategoryItem("HORMON", "9. HORMON", R.drawable.ic_hormon));
+        list.add(new CategoryItem("MATA", "10. MATA", R.drawable.ic_mata));
+        list.add(new CategoryItem("TELINGA", "11. TELINGA", R.drawable.ic_telinga));
+        list.add(new CategoryItem("MULUT & TENGGOROKAN", "12. OBAT-OBAT MULUT dan TENGGOROKAN", R.drawable.ic_mulut));
+        list.add(new CategoryItem("KULIT", "13. KULIT", R.drawable.ic_kulit));
+        list.add(new CategoryItem("VITAMIN & SUPLEMEN", "14. VITAMIN - SUPLEMEN", R.drawable.ic_vitamin));
+        list.add(new CategoryItem("NUTRISI", "15. NUTRISI", R.drawable.ic_nutrisi));
+
+        return list;
     }
 }

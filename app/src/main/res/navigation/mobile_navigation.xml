@@ -43,4 +43,15 @@
             app:argType="com.example.doirag.ui.library.ObatGenerikItem" />
     </fragment>
 
+    <fragment
+        android:id="@+id/nav_sediaan_list"
+        android:name="com.example.doirag.ui.library.ObatSediaanListFragment"
+        android:label="Daftar Obat"
+        tools:layout="@layout/fragment_list_simple">
+        <argument
+            android:name="category_name"
+            app:argType="string"
+            app:nullable="true" />
+    </fragment>
+
 </navigation>

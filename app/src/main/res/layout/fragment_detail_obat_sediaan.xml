@@ -11,7 +11,7 @@
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/surface"
+        android:background="@color/muted_white"
         app:elevation="0dp">
 
         <com.google.android.material.appbar.MaterialToolbar
@@ -20,7 +20,7 @@
             android:layout_height="?attr/actionBarSize"
             app:navigationIcon="@drawable/ic_arrow_back"
             app:navigationIconTint="@color/text_primary"
-            app:title="Detail Obat"
+            app:title="Detail Obat Sediaan"
             app:titleTextColor="@color/text_primary"
             app:titleCentered="true"/>
     </com.google.android.material.appbar.AppBarLayout>
@@ -53,7 +53,8 @@
                 android:layout_height="wrap_content"
                 android:text="Manufaktur"
                 android:textSize="14sp"
-                android:textColor="@color/text_secondary"
+                android:textStyle="bold"
+                android:textColor="@color/text_tertiary"
                 android:layout_marginBottom="12dp"/>
 
             <com.google.android.material.chip.ChipGroup
@@ -66,10 +67,11 @@
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:cardBackgroundColor="@color/surface"
+                app:cardBackgroundColor="#ebf7ff"
                 app:cardCornerRadius="12dp"
-                app:cardElevation="2dp"
-                app:strokeWidth="0dp"
+                app:cardElevation="0dp"
+                app:strokeWidth="1dp"
+                app:strokeColor="#9CBDFF"
                 android:layout_marginBottom="16dp">
 
                 <LinearLayout
@@ -81,7 +83,7 @@
                     <TextView
                         android:text="⚕️ Informasi Medis"
                         android:textStyle="bold"
-                        android:textColor="@color/primary"
+                        android:textColor="@color/primary_variant"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="12dp"/>
@@ -90,6 +92,7 @@
                         android:text="Indikasi"
                         android:textStyle="bold"
                         android:textSize="13sp"
+                        android:textColor="@color/text_primary"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"/>
                     <TextView
@@ -105,6 +108,7 @@
                         android:text="Komposisi"
                         android:textStyle="bold"
                         android:textSize="13sp"
+                        android:textColor="@color/text_primary"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"/>
                     <TextView
@@ -120,6 +124,7 @@
                         android:text="Dosis"
                         android:textStyle="bold"
                         android:textSize="13sp"
+                        android:textColor="@color/text_primary"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"/>
                     <TextView
@@ -152,7 +157,7 @@
                     <TextView
                         android:text="⚠️ Peringatan Keamanan"
                         android:textStyle="bold"
-                        android:textColor="#DC2626"
+                        android:textColor="@color/error"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="12dp"/>
@@ -161,14 +166,14 @@
                         android:text="Kontraindikasi"
                         android:textStyle="bold"
                         android:textSize="13sp"
-                        android:textColor="#7F1D1D"
+                        android:textColor="@color/text_error"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"/>
                     <TextView
                         android:id="@+id/tvKontraindikasi"
                         android:text="-"
                         android:textSize="14sp"
-                        android:textColor="#450A0A"
+                        android:textColor="@color/text_error"
                         android:layout_marginBottom="12dp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"/>
@@ -177,14 +182,14 @@
                         android:text="Efek Samping"
                         android:textStyle="bold"
                         android:textSize="13sp"
-                        android:textColor="#7F1D1D"
+                        android:textColor="@color/text_error"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"/>
                     <TextView
                         android:id="@+id/tvEfekSamping"
                         android:text="-"
                         android:textSize="14sp"
-                        android:textColor="#450A0A"
+                        android:textColor="@color/text_error"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"/>
 
@@ -192,7 +197,7 @@
                         android:text="Perhatian"
                         android:textStyle="bold"
                         android:textSize="13sp"
-                        android:textColor="#7F1D1D"
+                        android:textColor="@color/text_error"
                         android:layout_marginTop="12dp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"/>
@@ -200,7 +205,7 @@
                         android:id="@+id/tvPerhatian"
                         android:text="-"
                         android:textSize="14sp"
-                        android:textColor="#450A0A"
+                        android:textColor="@color/text_error"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"/>
                 </LinearLayout>
@@ -210,10 +215,11 @@
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:cardBackgroundColor="@color/surface"
+                app:cardBackgroundColor="#ebf7ff"
                 app:cardCornerRadius="12dp"
-                app:cardElevation="2dp"
-                app:strokeWidth="0dp"
+                app:cardElevation="0dp"
+                app:strokeWidth="1dp"
+                app:strokeColor="#9CBDFF"
                 android:layout_marginBottom="32dp">
 
                 <LinearLayout
@@ -226,6 +232,7 @@
                         android:text="Interaksi Obat"
                         android:textStyle="bold"
                         android:textSize="13sp"
+                        android:textColor="@color/text_primary"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"/>
                     <TextView
@@ -241,6 +248,7 @@
                         android:text="Farmakologi"
                         android:textStyle="bold"
                         android:textSize="13sp"
+                        android:textColor="@color/text_primary"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"/>
                     <TextView
@@ -256,6 +264,7 @@
                         android:text="Kemasan"
                         android:textStyle="bold"
                         android:textSize="13sp"
+                        android:textColor="@color/text_primary"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"/>
                     <TextView

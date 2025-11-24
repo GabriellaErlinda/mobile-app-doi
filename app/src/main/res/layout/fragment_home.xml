@@ -27,10 +27,7 @@
                 android:id="@+id/iconWelcome"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
-                android:src="@drawable/ic_launcher_background"
-                app:tint="@color/text_on_brand"
-                android:background="@drawable/ic_launcher_background"
-                android:backgroundTint="@color/white"
+                android:background="@drawable/ic_all_category"
                 android:padding="4dp"
                 android:scaleType="centerInside"
                 android:clipToOutline="true"
@@ -79,10 +76,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:cardCornerRadius="16dp"
-                app:cardElevation="4dp"
                 app:strokeWidth="0dp"
+                app:cardElevation="4dp"
                 android:layout_marginBottom="32dp"
-                app:cardBackgroundColor="@color/surface">
+                android:background="@drawable/bg_searchbar">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -95,15 +92,14 @@
                         android:layout_width="24dp"
                         android:layout_height="24dp"
                         android:src="@android:drawable/ic_menu_search"
-                        app:tint="@color/primary" />
+                        app:tint="@color/dark_grey" />
 
                     <TextView
                         android:id="@+id/inputSearch"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="16dp"
-                        android:background="@android:color/transparent"
-                        android:hint="Cari obat, gejala, dll..."
+                        android:hint="Cari obat..."
                         android:textColorHint="@color/text_tertiary"
                         android:textColor="@color/text_primary"
                         android:textSize="16sp"
@@ -128,8 +124,8 @@
                     app:cardCornerRadius="24dp"
                     app:cardElevation="0dp"
                     app:strokeWidth="1dp"
-                    app:strokeColor="#E2E8F0"
-                    app:cardBackgroundColor="@color/surface"
+                    app:strokeColor="@color/light_cyan"
+                    app:cardBackgroundColor="@color/card_primary"
                     android:clickable="true"
                     android:foreground="?attr/selectableItemBackground">
 
@@ -145,8 +141,7 @@
                             android:layout_height="56dp"
                             android:src="@drawable/ic_drug_lib"
                             app:tint="@color/primary"
-                            android:background="@drawable/bg_bubble_bot"
-                            android:backgroundTint="#EFF6FF"
+                            android:background="@drawable/bg_searchbar"
                             android:padding="14dp"/>
 
                         <TextView
@@ -168,8 +163,8 @@
                     app:cardCornerRadius="24dp"
                     app:cardElevation="0dp"
                     app:strokeWidth="1dp"
-                    app:strokeColor="#E2E8F0"
-                    app:cardBackgroundColor="@color/surface"
+                    app:strokeColor="@color/light_cyan"
+                    app:cardBackgroundColor="@color/card_primary"
                     android:clickable="true"
                     android:foreground="?attr/selectableItemBackground">
 
@@ -184,9 +179,8 @@
                             android:layout_width="56dp"
                             android:layout_height="56dp"
                             android:src="@drawable/ic_rag_chat"
-                            app:tint="@color/secondary"
-                            android:background="@drawable/bg_bubble_bot"
-                            android:backgroundTint="#ECFEFF"
+                            app:tint="@color/primary_variant"
+                            android:background="@drawable/bg_searchbar"
                             android:padding="14dp"/>
 
                         <TextView

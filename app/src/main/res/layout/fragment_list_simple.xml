@@ -40,7 +40,7 @@
         </HorizontalScrollView>
     </LinearLayout>
 
-    <!-- The List - FIXED: Added marginEnd to prevent overlap with FastScroller -->
+    <!-- Drug List -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler"
         android:layout_width="0dp"
@@ -48,15 +48,16 @@
         android:padding="12dp"
         android:paddingEnd="32dp"
         android:clipToPadding="false"
+        android:layout_marginRight="12dp"
         app:layout_constraintTop_toBottomOf="@id/filterContainer"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
 
-    <!-- The Alphabet Fast Scroller - FIXED: Changed to overlay on top -->
+    <!-- Fast Scroller -->
     <com.example.doirag.ui.library.FastScroller
         android:id="@+id/fastScroller"
-        android:layout_width="28dp"
+        android:layout_width="24dp"
         android:layout_height="0dp"
         android:layout_marginEnd="8dp"
         android:layout_marginTop="20dp"

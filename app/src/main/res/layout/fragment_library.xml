@@ -70,11 +70,10 @@
                 android:layout_height="wrap_content"
                 android:hint="Cari obat generik…"
                 app:startIconDrawable="@android:drawable/ic_menu_search"
-                app:startIconTint="#64748B"
-                app:boxBackgroundColor="@android:color/transparent"
+                app:startIconTint="@color/dark_grey"
+                android:background="@drawable/bg_searchbar"
                 app:boxStrokeWidth="0dp"
-                app:boxStrokeWidthFocused="0dp"
-                app:hintTextColor="#94A3B8">
+                app:boxStrokeWidthFocused="0dp">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/searchInput"
@@ -82,10 +81,11 @@
                     android:layout_height="wrap_content"
                     android:imeOptions="actionSearch"
                     android:inputType="text"
-                    android:textSize="15sp"
-                    android:maxLines="1" />
+                    android:maxLines="1"
+                    android:textSize="15sp" />
 
             </com.google.android.material.textfield.TextInputLayout>
+
 
         </com.google.android.material.card.MaterialCardView>
 
