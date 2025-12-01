@@ -28,7 +28,7 @@ public class RagViewModel extends AndroidViewModel {
 
     private static final String TAG = "RagViewModel";
     // Sesuaikan endpoint Flask
-    private static final String FLASK_BACKEND_URL = "http://10.0.2.2:5000/tanya-obat";
+    private static final String FLASK_BACKEND_URL = "http://192.168.2.247:5000/tanya-obat";
 
     private final OkHttpClient httpClient;
     private final Gson gson;
