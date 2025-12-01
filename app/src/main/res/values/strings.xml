@@ -3,4 +3,8 @@
     <string name="title_home">Home</string>
     <string name="title_library">Obat</string>
     <string name="title_rag">MediBot</string>
+    <string name="semua_kategori">Semua Kategori</string>
+    <string name="pilih_kategori">Pilih Kategori</string>
+    <string name="panadol">Panadol</string>
+    <string name="manufacturer_kategori">Manufacturer • Kategori</string>
 </resources>

@@ -5,7 +5,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F8FAFC"
     tools:context=".ui.library.LibraryFragment">
 
     <com.google.android.material.appbar.AppBarLayout
@@ -13,7 +12,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingTop="24dp"
-        android:background="@android:color/white"
+        android:background="@color/primary_variant"
+        android:stateListAnimator="@null"
         app:elevation="0dp">
 
         <!-- Header with Title -->
@@ -28,10 +28,10 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Daftar Obat"
+                android:text="DAFTAR OBAT"
                 android:textSize="24sp"
                 android:textStyle="bold"
-                android:textColor="#1E293B"
+                android:textColor="@color/white"
                 android:layout_marginBottom="4dp" />
         </LinearLayout>
 
@@ -40,18 +40,20 @@
             android:id="@+id/tabLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@android:color/white"
-            app:tabIndicatorColor="#2563EB"
+            android:background="@color/primary_variant"
+            app:tabIndicatorColor="@color/white"
             app:tabIndicatorHeight="3dp"
-            app:tabTextColor="#64748B"
-            app:tabSelectedTextColor="#2563EB"
+            app:tabTextColor="@color/secondary"
+            app:tabSelectedTextColor="@color/white"
             app:tabIndicatorFullWidth="false"
             app:tabMode="fixed"
             app:tabTextAppearance="@style/TabTextStyle"
             android:layout_marginBottom="12dp"/>
 
-        <!-- Container Gabungan Search Bar + Tombol Action -->
+        <!-- Container Gabungan Search Bar + Action btn -->
+        <!-- ID searchContainer untuk di-hide/show via Java -->
         <LinearLayout
+            android:id="@+id/searchContainer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
@@ -59,41 +61,30 @@
             android:paddingHorizontal="20dp"
             android:paddingBottom="12dp">
 
-            <!-- Search Bar (Mengisi sisa ruang dengan weight=1) -->
-            <com.google.android.material.card.MaterialCardView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                app:cardCornerRadius="16dp"
-                app:cardElevation="2dp"
-                app:strokeWidth="0dp"
-                android:backgroundTint="@android:color/white">
-
-                <com.google.android.material.textfield.TextInputLayout
+                <!-- Search Bar -->
+                <com.google.android.material.card.MaterialCardView
                     android:id="@+id/searchLayout"
-                    style="@style/Widget.Material3.TextInputLayout.FilledBox.Dense"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="Cari obat generik…"
-                    app:startIconDrawable="@android:drawable/ic_menu_search"
-                    app:startIconTint="@color/dark_grey"
-                    android:background="@drawable/bg_searchbar"
-                    app:boxStrokeWidth="0dp"
-                    app:boxStrokeWidthFocused="0dp">
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="0dp"
+                    app:strokeWidth="0dp"
+                    android:backgroundTint="@color/muted_white">
 
-                    <com.google.android.material.textfield.TextInputEditText
+                    <EditText
                         android:id="@+id/searchInput"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
+                        android:hint="Cari obat generik ..."
+                        android:paddingHorizontal="16dp"
+                        android:paddingVertical="12dp"
+                        android:textSize="14sp"
                         android:imeOptions="actionSearch"
                         android:inputType="text"
-                        android:maxLines="1"
-                        android:textSize="15sp"
-                        android:paddingTop="12dp"
-                        android:paddingBottom="12dp"
-                        android:background="@null"/>
-                </com.google.android.material.textfield.TextInputLayout>
-            </com.google.android.material.card.MaterialCardView>
+                        android:background="@color/muted_white"/>
+                </com.google.android.material.card.MaterialCardView>
+
 
             <!-- Tombol Filter (Hanya muncul di Tab Sediaan) -->
             <!-- Dibuat kotak ikon agar hemat tempat -->
@@ -104,39 +95,37 @@
                 android:layout_height="52dp"
                 android:layout_marginStart="8dp"
                 app:icon="@drawable/ic_filter"
-                app:iconTint="#64748B"
+                app:iconTint="@color/white"
                 app:iconGravity="textStart"
                 app:iconPadding="0dp"
                 android:insetLeft="0dp"
                 android:insetTop="0dp"
                 android:insetRight="0dp"
                 android:insetBottom="0dp"
-                app:strokeColor="#CBD5E1"
+                app:strokeColor="@color/white"
                 app:cornerRadius="14dp"
                 android:padding="0dp"
                 android:visibility="gone"
                 android:tooltipText="Filter Kategori"/>
 
-            <!-- Tombol Urutkan -->
+            <!-- sort btn -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnSort"
                 style="@style/Widget.Material3.Button.OutlinedButton"
-                android:layout_width="52dp"
-                android:layout_height="52dp"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
                 android:layout_marginStart="8dp"
                 app:icon="@drawable/ic_sort"
-                app:iconTint="#64748B"
+                app:iconTint="@color/white"
                 app:iconGravity="textStart"
                 app:iconPadding="0dp"
                 android:insetLeft="0dp"
                 android:insetTop="0dp"
                 android:insetRight="0dp"
                 android:insetBottom="0dp"
-                app:strokeColor="#CBD5E1"
-                app:cornerRadius="14dp"
-                android:padding="0dp"
-                android:tooltipText="Urutkan"/>
-
+                app:strokeColor="@color/white"
+                app:cornerRadius="18dp"
+                android:padding="0dp"/>
         </LinearLayout>
 
         <!-- Area untuk Chip Filter yang Sedang Aktif (Jika user memilih kategori) -->

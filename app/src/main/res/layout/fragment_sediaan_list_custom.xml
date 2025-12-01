@@ -4,14 +4,17 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F8FAFC">
+    android:background="@color/surface">
 
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/surface"
+        android:background="@color/primary_variant"
+        android:stateListAnimator="@null"
+        android:paddingTop="8dp"
         app:elevation="0dp">
 
+        <!-- Baris 1: Tombol Back & Judul Halaman -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
@@ -26,7 +29,7 @@
                 android:layout_height="48dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:src="@drawable/ic_arrow_back"
-                app:tint="@color/text_primary" />
+                app:tint="@color/white" />
 
             <TextView
                 android:id="@+id/tvPageTitle"
@@ -34,7 +37,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:text="NAMA KATEGORI"
-                android:textColor="@color/text_primary"
+                android:textColor="@color/white"
                 android:textSize="18sp"
                 android:textStyle="bold"
                 android:maxLines="1"
@@ -44,65 +47,89 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
             android:paddingHorizontal="16dp"
-            android:paddingBottom="8dp">
+            android:paddingBottom="12dp">
 
-            <EditText
-                android:id="@+id/inputSearch"
-                android:layout_width="match_parent"
+            <!-- Search Bar -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="0dp"
+                app:strokeWidth="0dp"
+                android:backgroundTint="@color/muted_white">
+
+                <EditText
+                    android:id="@+id/inputSearch"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Cari obat sediaan ..."
+                    android:paddingHorizontal="16dp"
+                    android:paddingVertical="12dp"
+                    android:textSize="14sp"
+                    android:imeOptions="actionSearch"
+                    android:inputType="text"
+                    android:background="@color/muted_white"/>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Filter btn (only for Semua Kategori) -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnFilterList"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                android:layout_width="48dp"
                 android:layout_height="48dp"
-                android:background="@drawable/bg_searchbar"
-                android:backgroundTint="#F1F5F9"
-                android:hint="Cari dalam kategori ini..."
-                android:paddingHorizontal="16dp"
-                android:textSize="14sp"
-                android:imeOptions="actionSearch"
-                android:inputType="text"/>
+                android:layout_marginStart="8dp"
+                app:icon="@drawable/ic_filter"
+                app:iconTint="@color/white"
+                app:iconGravity="textStart"
+                app:iconPadding="0dp"
+                android:insetLeft="0dp"
+                android:insetTop="0dp"
+                android:insetRight="0dp"
+                android:insetBottom="0dp"
+                app:strokeColor="@color/white"
+                app:cornerRadius="18dp"
+                android:padding="0dp"
+                android:visibility="gone" />
+
+            <!-- sort btn -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnSortList"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_marginStart="8dp"
+                app:icon="@drawable/ic_sort"
+                app:iconTint="@color/white"
+                app:iconGravity="textStart"
+                app:iconPadding="0dp"
+                android:insetLeft="0dp"
+                android:insetTop="0dp"
+                android:insetRight="0dp"
+                android:insetBottom="0dp"
+                app:strokeColor="@color/white"
+                app:cornerRadius="18dp"
+                android:padding="0dp" />
 
         </LinearLayout>
 
-        <LinearLayout
-            android:id="@+id/filterContainer"
+        <!-- Area untuk Chip Filter yang Sedang Aktif (Opsional) -->
+        <HorizontalScrollView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:paddingVertical="8dp"
-            android:paddingHorizontal="12dp"
-            android:background="@color/muted_white"
-            android:gravity="center_vertical">
+            android:scrollbars="none"
+            android:paddingHorizontal="16dp"
+            android:paddingBottom="4dp">
 
-            <HorizontalScrollView
-                android:layout_width="match_parent"
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/chipGroupActiveFilter"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:paddingHorizontal="16dp"
-                android:paddingBottom="4dp"
-                android:scrollbars="none">
-
-                <com.google.android.material.chip.ChipGroup
-                    android:id="@+id/chipGroupSort"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    app:selectionRequired="true"
-                    app:singleLine="true"
-                    app:singleSelection="true">
-
-                    <com.google.android.material.chip.Chip
-                        android:id="@+id/chipSortAZ"
-                        style="@style/RoundedFilterChip"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:checked="true"
-                        android:text="A » Z" />
-
-                    <com.google.android.material.chip.Chip
-                        android:id="@+id/chipSortZA"
-                        style="@style/RoundedFilterChip"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Z » A" />
-                </com.google.android.material.chip.ChipGroup>
-            </HorizontalScrollView>
-        </LinearLayout>
+                app:singleLine="true"/>
+        </HorizontalScrollView>
 
     </com.google.android.material.appbar.AppBarLayout>
 
@@ -116,8 +143,6 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:padding="12dp"
-            android:paddingEnd="12dp"
-            android:layout_marginRight="12dp"
             android:clipToPadding="false"/>
 
         <com.example.doirag.ui.library.FastScroller
@@ -130,7 +155,8 @@
             android:background="@drawable/fast_scroller"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            android:visibility="gone"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

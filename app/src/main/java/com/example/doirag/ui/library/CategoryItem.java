@@ -1,9 +1,9 @@
 package com.example.doirag.ui.library;
 
 public class CategoryItem {
-    String displayName; // Nama pendek untuk di Card (misal: "PERNAFASAN")
-    String dbValue;     // Nama persis di Database (misal: "1. Sistem Saluran Pernafasan")
-    int iconResId;      // Ikon
+    String displayName; // Nama pendek untuk di Card (ex: "PERNAFASAN")
+    String dbValue;     // Nama persis di Database (ex: "1. Sistem Saluran Pernafasan")
+    int iconResId;
 
     public CategoryItem(String displayName, String dbValue, int iconResId) {
         this.displayName = displayName;

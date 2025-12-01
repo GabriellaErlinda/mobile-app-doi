@@ -16,11 +16,9 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.core.graphics.Insets;
 
-import com.example.doirag.R;
 import com.example.doirag.databinding.FragmentRagBinding;
 import com.google.android.material.chip.Chip;
-import com.google.android.material.textfield.TextInputEditText;
-
+import android.widget.EditText;
 
 public class RagFragment extends Fragment {
 
@@ -28,7 +26,7 @@ public class RagFragment extends Fragment {
     private RagViewModel viewModel;
     private ChatAdapter adapter;
     private RecyclerView recyclerChat;
-    private TextInputEditText inputMessage;
+    private EditText inputMessage;
 
     @Nullable
     @Override
