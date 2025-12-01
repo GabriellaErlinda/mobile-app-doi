@@ -67,11 +67,11 @@ public class RagViewModel extends AndroidViewModel {
             return;
         }
 
-        // 1. Tambahkan pesan user
+        // 1. pesan user
         ChatMessage userMessage = new ChatMessage(userQuery, ChatMessage.Type.USER);
         messageList.add(userMessage);
 
-        // 2. Tambahkan pesan "loading"
+        // 2. pesan "loading"
         ChatMessage loadingMessage = new ChatMessage("...", ChatMessage.Type.LOADING);
         messageList.add(loadingMessage);
 
@@ -146,9 +146,7 @@ public class RagViewModel extends AndroidViewModel {
     private void updateLastMessage(ChatMessage newMessage) {
         if (messageList.isEmpty()) return;
 
-        // Hapus pesan "loading" terakhir
         messageList.remove(messageList.size() - 1);
-        // Tambahkan pesan baru (jawaban AI / error)
         messageList.add(newMessage);
 
         // postValue karena dipanggil dari background thread

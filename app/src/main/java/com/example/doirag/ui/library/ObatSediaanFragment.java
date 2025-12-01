@@ -26,16 +26,25 @@ public class ObatSediaanFragment extends Fragment {
 
         recyclerView = v.findViewById(R.id.recycler);
 
-        // Sembunyikan elemen layout lama yang tidak terpakai di halaman menu ini
         if (v.findViewById(R.id.fastScroller) != null)
             v.findViewById(R.id.fastScroller).setVisibility(View.GONE);
         if (v.findViewById(R.id.filterContainer) != null)
             v.findViewById(R.id.filterContainer).setVisibility(View.GONE);
 
-        // Gunakan Grid 2 Kolom
+
+        int paddingPx = (int) (12 * getResources().getDisplayMetrics().density);
+        recyclerView.setPadding(paddingPx, paddingPx, paddingPx, paddingPx);
+
+        if (recyclerView.getLayoutParams() instanceof ViewGroup.MarginLayoutParams) {
+            ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) recyclerView.getLayoutParams();
+            params.setMargins(0, 0, 0, 0); // Reset semua margin layout
+            recyclerView.setLayoutParams(params);
+        }
+
+        // Grid 2 Kolom
         recyclerView.setLayoutManager(new GridLayoutManager(requireContext(), 2));
 
-        // Ambil Data Kategori yang sudah disesuaikan dengan Database
+        // Ambil Data Kategori sesuai Database
         List<CategoryItem> categories = getCategories();
 
         // Setup Adapter

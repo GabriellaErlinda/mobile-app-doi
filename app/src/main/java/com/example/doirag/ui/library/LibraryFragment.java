@@ -85,8 +85,6 @@ public class LibraryFragment extends Fragment {
                 if (searchInput != null) {
                     if (tab.getPosition() == 0) {
                         binding.searchLayout.setHint("Cari nama obat generik…");
-                        // Generik might not have categories, so disable filter button visually?
-                        // or keep it but show empty list. Let's keep it visible for sorting.
                         binding.btnFilter.setVisibility(View.GONE);
                     } else {
                         binding.searchLayout.setHint("Cari sediaan/route…");
@@ -100,10 +98,9 @@ public class LibraryFragment extends Fragment {
         });
 
         // 5. Setup Filter & Sort UI
-        // Ensure filter bar is visible
         binding.filterScrollView.setVisibility(View.VISIBLE);
 
-        // Default state check for Filter button visibility
+        // Default state check button filter
         if (binding.tabLayout.getSelectedTabPosition() == 0) {
             binding.btnFilter.setVisibility(View.GONE);
         }
