@@ -11,7 +11,10 @@
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/muted_white"
+        android:background="@color/primary_variant"
+        android:stateListAnimator="@null"
+        app:liftOnScroll="false"
+        android:paddingTop="16dp"
         app:elevation="0dp">
 
         <com.google.android.material.appbar.MaterialToolbar
@@ -19,9 +22,9 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             app:navigationIcon="@drawable/ic_arrow_back"
-            app:navigationIconTint="@color/text_primary"
+            app:navigationIconTint="@color/white"
             app:title="Detail Obat Sediaan"
-            app:titleTextColor="@color/text_primary"
+            app:titleTextColor="@color/white"
             app:titleCentered="true"/>
     </com.google.android.material.appbar.AppBarLayout>
 
@@ -67,11 +70,11 @@
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:cardBackgroundColor="#ebf7ff"
+                app:cardBackgroundColor="@color/card_primary"
                 app:cardCornerRadius="12dp"
                 app:cardElevation="0dp"
                 app:strokeWidth="1dp"
-                app:strokeColor="#9CBDFF"
+                app:strokeColor="@color/light_blue"
                 android:layout_marginBottom="16dp">
 
                 <LinearLayout
@@ -215,11 +218,11 @@
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:cardBackgroundColor="#ebf7ff"
+                app:cardBackgroundColor="@color/card_primary"
                 app:cardCornerRadius="12dp"
                 app:cardElevation="0dp"
                 app:strokeWidth="1dp"
-                app:strokeColor="#9CBDFF"
+                app:strokeColor="@color/light_blue"
                 android:layout_marginBottom="32dp">
 
                 <LinearLayout

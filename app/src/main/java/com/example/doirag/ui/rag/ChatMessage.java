@@ -4,10 +4,9 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-// Ganti total dengan model ini
 public class ChatMessage {
 
-    // Tipe untuk menentukan siapa pengirimnya
+    // Tipe untuk menentukan siapa yg kirim
     public enum Type {
         USER,
         ASSISTANT,

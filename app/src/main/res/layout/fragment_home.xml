@@ -54,7 +54,7 @@
                 android:layout_height="wrap_content"
                 android:text="Siap membantu Anda mencari informasi obat"
                 android:textSize="14sp"
-                android:textColor="#E0E7FF"
+                android:textColor="@color/text_on_brand"
                 android:layout_marginStart="16dp"
                 app:layout_constraintStart_toEndOf="@id/iconWelcome"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -77,9 +77,9 @@
                 android:layout_height="wrap_content"
                 app:cardCornerRadius="16dp"
                 app:strokeWidth="0dp"
-                app:cardElevation="4dp"
+                app:cardElevation="0dp"
                 android:layout_marginBottom="32dp"
-                android:background="@drawable/bg_searchbar">
+                android:background="@color/muted_white">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -107,6 +107,37 @@
                         android:focusable="true" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Kategori Obat Sediaan"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:textColor="@color/text_primary"
+                android:layout_marginBottom="12dp"/>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerHomeCategories"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:nestedScrollingEnabled="false"
+                android:overScrollMode="never"
+                android:layout_marginBottom="12dp"/>
+
+            <TextView
+                android:id="@+id/tvSeeMore"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Telusuri Lebih Banyak >"
+                android:gravity="center"
+                android:textSize="13sp"
+                android:textColor="@color/grey"
+                android:padding="8dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:background="?attr/selectableItemBackground"
+                android:layout_marginBottom="32dp"/>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -194,39 +225,6 @@
                 </com.google.android.material.card.MaterialCardView>
 
             </LinearLayout>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Kategori Populer"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                android:textColor="@color/text_primary"
-                android:layout_marginBottom="16dp"/>
-
-            <com.google.android.material.chip.ChipGroup
-                android:id="@+id/chipGroupCategories"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:singleLine="false"
-                app:chipSpacing="10dp"
-                android:layout_marginBottom="32dp"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Pencarian Terakhir"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                android:textColor="@color/text_primary"
-                android:layout_marginBottom="16dp"/>
-
-            <LinearLayout
-                android:id="@+id/layoutHistory"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical" />
-
         </LinearLayout>
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>

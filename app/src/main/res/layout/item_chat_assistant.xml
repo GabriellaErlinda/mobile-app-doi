@@ -20,13 +20,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical"
+            android:background="@color/light_cyan"
             android:padding="12dp">
 
             <TextView
                 android:id="@+id/textMessage"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="?attr/colorOnSurface"
+                android:textColor="@color/secondary_variant"
                 android:textSize="14sp" />
 
             <!-- Citation chips -->
@@ -43,7 +44,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="6dp"
-                android:textColor="?attr/colorOnSurface"
+                android:textColor="@color/secondary_variant"
                 android:textSize="10sp"
                 android:alpha="0.6"/>
         </LinearLayout>

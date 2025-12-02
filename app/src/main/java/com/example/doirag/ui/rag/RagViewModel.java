@@ -28,7 +28,7 @@ public class RagViewModel extends AndroidViewModel {
 
     private static final String TAG = "RagViewModel";
     // Sesuaikan endpoint Flask
-    private static final String FLASK_BACKEND_URL = "http://192.168.2.247:5000/tanya-obat";
+    private static final String FLASK_BACKEND_URL = "http://10.188.43.97:5000/tanya-obat";
 
     private final OkHttpClient httpClient;
     private final Gson gson;
@@ -44,7 +44,7 @@ public class RagViewModel extends AndroidViewModel {
                 .connectTimeout(15, TimeUnit.SECONDS)   // waktu sambung ke server
                 .writeTimeout(30, TimeUnit.SECONDS)     // waktu kirim body
                 .readTimeout(90, TimeUnit.SECONDS)      // waktu tunggu jawaban server
-                // .callTimeout(0, TimeUnit.SECONDS)    // 0 = no global timeout (opsional)
+                // .callTimeout(0, TimeUnit.SECONDS)
                 .retryOnConnectionFailure(true)
                 .build();
 

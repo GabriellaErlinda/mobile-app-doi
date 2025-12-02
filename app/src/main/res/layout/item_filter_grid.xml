@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/cardFilterItem"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="6dp"
+    android:clickable="true"
+    android:focusable="true"
+    android:foreground="?attr/selectableItemBackground"
+    app:cardCornerRadius="12dp"
+    app:cardElevation="0dp"
+    app:strokeWidth="1dp"
+    app:strokeColor="@color/light_cyan"
+    app:cardBackgroundColor="@color/card_primary">
+
+    <TextView
+        android:id="@+id/tvFilterName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Nama Kategori"
+        android:textSize="13sp"
+        android:textColor="@color/primary_variant"
+        android:gravity="center"
+        android:paddingVertical="14dp"
+        android:paddingHorizontal="8dp"
+        android:maxLines="2"
+        android:ellipsize="end"
+        android:textStyle="bold"/>
+
+</com.google.android.material.card.MaterialCardView>

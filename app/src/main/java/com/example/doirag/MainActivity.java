@@ -51,17 +51,13 @@ public class MainActivity extends AppCompatActivity {
                 int screenHeight = rootView.getRootView().getHeight();
                 int keypadHeight = screenHeight - r.bottom;
 
+                //keyboard open
                 if (keypadHeight > screenHeight * 0.15) {
-                    // Keyboard is OPEN
-                    // Only hide navbar if we are on the Chat/Rag page
-                    if (navController.getCurrentDestination() != null &&
-                            navController.getCurrentDestination().getId() == R.id.nav_rag) {
-                        navView.setVisibility(View.GONE);
-                    }
-                } else {
-                    // Keyboard is CLOSED
-                    // Restore navbar ONLY if we are NOT on the Drug Detail page
-                    // (Because the Detail page must always have it hidden)
+                    navView.setVisibility(View.GONE);
+
+                }
+                //keyboard close
+                else {
                     if (navController.getCurrentDestination() != null &&
                             navController.getCurrentDestination().getId() != R.id.nav_drug_detail) {
                         navView.setVisibility(View.VISIBLE);

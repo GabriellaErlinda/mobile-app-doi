@@ -1,7 +1,7 @@
 package com.example.doirag.ui.library;
 
 import com.google.gson.annotations.SerializedName;
-import com.google.gson.JsonElement; // Ubah ke JsonElement
+import com.google.gson.JsonElement;
 import java.io.Serializable;
 import java.util.Objects;
 
@@ -49,8 +49,7 @@ public class ObatGenerikItem implements Serializable {
     @SerializedName("kemasan")
     public String kemasan;
 
-    // UBAH KE JsonElement: Ini adalah tipe universal (bisa Object, Array, Primitive, atau Null)
-    // Ini akan mencegah crash "Expected JsonObject but was..."
+    // mencegah crash "Expected JsonObject but was..."
     @SerializedName("extras")
     public JsonElement extras;
 

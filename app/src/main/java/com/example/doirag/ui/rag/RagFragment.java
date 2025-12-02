@@ -99,6 +99,7 @@ public class RagFragment extends Fragment {
 
     private void setupPromptChips() {
         String[] prompts = new String[]{
+                "Komposisi",
                 "Indikasi & kontraindikasi",
                 "Dosis dewasa & anak",
                 "Interaksi obat",

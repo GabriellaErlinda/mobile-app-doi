@@ -9,6 +9,8 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
+import android.text.Html;
+import android.text.Spanned;
 
 import com.example.doirag.R;
 
@@ -88,7 +90,6 @@ public class ChatAdapter extends ListAdapter<ChatMessage, RecyclerView.ViewHolde
     // ViewHolder untuk item_chat_assistant.xml
     static class AssistantViewHolder extends RecyclerView.ViewHolder {
         TextView textMessage, textTime;
-        // Kita tidak pakai citations dari XML, tapi Anda bisa menambahkannya nanti
 
         AssistantViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -97,7 +98,17 @@ public class ChatAdapter extends ListAdapter<ChatMessage, RecyclerView.ViewHolde
         }
 
         void bind(ChatMessage message) {
-            textMessage.setText(message.getMessage());
+            // textMessage.setText(message.getMessage());
+            String rawText = message.getMessage();
+
+            if (rawText != null) {
+                String htmlText = rawText.replace("\n", "<br>");
+                htmlText = htmlText.replaceAll("\\*\\*(.*?)\\*\\*", "<b>$1</b>");
+                htmlText = htmlText.replaceAll("\\*(.*?)", "• $1");
+                textMessage.setText(Html.fromHtml(htmlText, Html.FROM_HTML_MODE_COMPACT));
+            }
+            // ----------------------------------------
+
             textTime.setText(message.getFormattedTime());
         }
 

@@ -18,13 +18,16 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.GridLayoutManager;
 
 import com.example.doirag.R;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
+import com.google.android.material.card.MaterialCardView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ObatSediaanListFragment extends Fragment {
@@ -154,56 +157,135 @@ public class ObatSediaanListFragment extends Fragment {
     private void showFilterBottomSheet() {
         BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(requireContext());
 
-        android.widget.ScrollView scrollView = new android.widget.ScrollView(requireContext());
-        android.widget.LinearLayout container = new android.widget.LinearLayout(requireContext());
-        container.setOrientation(android.widget.LinearLayout.VERTICAL);
-        container.setPadding(40, 40, 40, 40);
+        // 1. Setup Layout Utama BottomSheet
+        android.widget.LinearLayout mainContainer = new android.widget.LinearLayout(requireContext());
+        mainContainer.setOrientation(android.widget.LinearLayout.VERTICAL);
+        mainContainer.setPadding(0, 40, 0, 40); // Padding container
 
+        // 2. Judul
         TextView title = new TextView(requireContext());
         title.setText("Pilih Kategori");
         title.setTextSize(20);
         title.setTypeface(null, android.graphics.Typeface.BOLD);
-        title.setPadding(0,0,0,24);
-        container.addView(title);
+        title.setPadding(40, 0, 40, 24); // Padding kiri kanan judul
+        title.setTextColor(getResources().getColor(R.color.text_primary, null));
+        mainContainer.addView(title);
 
-        ChipGroup chipGroup = new ChipGroup(requireContext());
-        chipGroup.setSingleSelection(true);
+        // 3. Setup RecyclerView untuk Grid 2 Kolom
+        RecyclerView gridRecycler = new RecyclerView(requireContext());
+        gridRecycler.setLayoutManager(new GridLayoutManager(requireContext(), 2));
+        gridRecycler.setPadding(24, 0, 24, 0); // Padding grid agar tidak mepet layar
+        gridRecycler.setClipToPadding(false);
 
-        Chip allChip = new Chip(requireContext());
-        allChip.setText("Semua Kategori");
-        allChip.setCheckable(true);
-        // Cek status saat ini
-        if (viewModel.getActiveCategoryFilter() == null) allChip.setChecked(true);
+        // 4. Siapkan Data (Mapping Nama Pendek -> Value Database)
+        List<FilterOption> options = getFilterOptions();
 
-        allChip.setOnClickListener(v -> {
-            viewModel.setCategoryFilter(null);
-            updateActiveChipUI(null);
+        // 5. Setup Adapter
+        FilterAdapter adapter = new FilterAdapter(options, viewModel.getActiveCategoryFilter(), item -> {
+            viewModel.setCategoryFilter(item.dbValue);
+            updateActiveChipUI(item.label); // Tampilkan nama pendek di chip UI
             bottomSheetDialog.dismiss();
         });
-        chipGroup.addView(allChip);
 
-        List<String> categories = viewModel.getCategoryList().getValue();
-        if (categories != null) {
-            for (String cat : categories) {
-                Chip chip = new Chip(requireContext());
-                chip.setText(cat);
-                chip.setCheckable(true);
-                if (cat.equals(viewModel.getActiveCategoryFilter())) {
-                    chip.setChecked(true);
-                }
-                chip.setOnClickListener(v -> {
-                    viewModel.setCategoryFilter(cat);
-                    updateActiveChipUI(cat);
-                    bottomSheetDialog.dismiss();
-                });
-                chipGroup.addView(chip);
-            }
+        gridRecycler.setAdapter(adapter);
+        mainContainer.addView(gridRecycler);
+
+        // 6. Tampilkan
+        bottomSheetDialog.setContentView(mainContainer);
+        bottomSheetDialog.show();
+    }
+
+    // --- HELPER METHODS UNTUK DATA FILTER ---
+
+    private List<FilterOption> getFilterOptions() {
+        List<FilterOption> list = new ArrayList<>();
+        // Format: (Label Tampil, Value Database)
+        list.add(new FilterOption("Semua Kategori", null));
+        list.add(new FilterOption("Pernafasan", "1. Sistem Saluran Pernafasan"));
+        list.add(new FilterOption("Kardiovaskuler", "2. Sistem Kardiovaskuler"));
+        list.add(new FilterOption("Pencernaan", "3. Sistem Saluran Cerna"));
+        list.add(new FilterOption("Saraf & Otot", "4. Sistem Saraf dan Otot"));
+        list.add(new FilterOption("Kemih & Kelamin", "5. Kemih dan Kelamin"));
+        list.add(new FilterOption("Metabolisme", "6. Sistem Metabolisme"));
+        list.add(new FilterOption("Imun & Vaksin", "7. Sistem Imunologi, Vaksin dan Imunosera"));
+        list.add(new FilterOption("Antibiotika", "8. Anti Biotika dll"));
+        list.add(new FilterOption("Hormon", "9. HORMON"));
+        list.add(new FilterOption("Mata", "10. MATA"));
+        list.add(new FilterOption("Telinga", "11. TELINGA"));
+        list.add(new FilterOption("Mulut & Tenggorokan", "12. OBAT-OBAT MULUT dan TENGGOROKAN"));
+        list.add(new FilterOption("Kulit", "13. KULIT"));
+        list.add(new FilterOption("Vitamin & Suplemen", "14. VITAMIN - SUPLEMEN"));
+        list.add(new FilterOption("Nutrisi", "15. NUTRISI"));
+        return list;
+    }
+
+    // --- INNER CLASSES (ADAPTER & MODEL) ---
+
+    private static class FilterOption {
+        String label;
+        String dbValue;
+        FilterOption(String l, String v) { label = l; dbValue = v; }
+    }
+
+    interface OnItemClick {
+        void onClick(FilterOption item);
+    }
+
+    private class FilterAdapter extends RecyclerView.Adapter<FilterAdapter.VH> {
+        private final List<FilterOption> items;
+        private final String currentActiveValue;
+        private final OnItemClick listener;
+
+        FilterAdapter(List<FilterOption> items, String currentActiveValue, OnItemClick listener) {
+            this.items = items;
+            this.currentActiveValue = currentActiveValue;
+            this.listener = listener;
         }
 
-        container.addView(chipGroup);
-        scrollView.addView(container);
-        bottomSheetDialog.setContentView(scrollView);
-        bottomSheetDialog.show();
+        @NonNull @Override
+        public VH onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+            View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_filter_grid, parent, false);
+            return new VH(v);
+        }
+
+        @Override
+        public void onBindViewHolder(@NonNull VH holder, int position) {
+            FilterOption item = items.get(position);
+            holder.tvName.setText(item.label);
+
+            boolean isActive;
+            if (item.dbValue == null) {
+                isActive = (currentActiveValue == null);
+            } else {
+                isActive = item.dbValue.equals(currentActiveValue);
+            }
+
+            // Ganti warna jika aktif
+            if (isActive) {
+                holder.card.setCardBackgroundColor(getResources().getColor(R.color.primary, null));
+                holder.tvName.setTextColor(getResources().getColor(R.color.white, null));
+                holder.card.setStrokeColor(getResources().getColor(R.color.primary, null));
+            } else {
+                holder.card.setCardBackgroundColor(getResources().getColor(R.color.surface, null));
+                holder.tvName.setTextColor(getResources().getColor(R.color.text_primary, null));
+                holder.card.setStrokeColor(getResources().getColor(R.color.light_grey, null));
+            }
+
+            holder.itemView.setOnClickListener(v -> listener.onClick(item));
+        }
+
+        @Override
+        public int getItemCount() { return items.size(); }
+
+        class VH extends RecyclerView.ViewHolder {
+            TextView tvName;
+            MaterialCardView card;
+            VH(View itemView) {
+                super(itemView);
+                tvName = itemView.findViewById(R.id.tvFilterName);
+                card = itemView.findViewById(R.id.cardFilterItem);
+            }
+        }
     }
 
     private void updateActiveChipUI(String filterName) {
