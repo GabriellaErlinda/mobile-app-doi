@@ -124,10 +124,13 @@ public class LibraryViewModel extends AndroidViewModel {
             if (query != null && !query.trim().isEmpty()) {
                 String lowerQuery = query.toLowerCase().trim();
                 for (ObatSediaanItem item : allSediaanDrugs) {
+                    // Cek apakah query cocok dengan Nama, Manufaktur, Kategori...
                     if ((item.drug_name != null && item.drug_name.toLowerCase().contains(lowerQuery)) ||
                             (item.manufacturer != null && item.manufacturer.toLowerCase().contains(lowerQuery)) ||
                             (item.category_main != null && item.category_main.toLowerCase().contains(lowerQuery)) ||
-                            (item.category_sub != null && item.category_sub.toLowerCase().contains(lowerQuery))) {
+                            (item.category_sub != null && item.category_sub.toLowerCase().contains(lowerQuery)) ||
+                            (item.indikasi != null && item.indikasi.toLowerCase().contains(lowerQuery))) {
+
                         processed.add(item);
                     }
                 }
@@ -173,8 +176,9 @@ public class LibraryViewModel extends AndroidViewModel {
             for (ObatGenerikItem item : masterGenerikList) {
                 boolean matchName = item.nama_generik != null && item.nama_generik.toLowerCase().contains(lowerQuery);
                 boolean matchBrand = item.nama_obat_dan_produsen != null && item.nama_obat_dan_produsen.toLowerCase().contains(lowerQuery);
+                boolean matchIndikasi = item.indikasi != null && item.indikasi.toLowerCase().contains(lowerQuery);
 
-                if (matchName || matchBrand) {
+                if (matchName || matchBrand || matchIndikasi) {
                     processed.add(item);
                 }
             }
