@@ -13,6 +13,8 @@ import androidx.navigation.Navigation;
 import com.example.doirag.R;
 import com.example.doirag.databinding.FragmentDetailObatSediaanBinding;
 import com.google.android.material.chip.Chip;
+import com.google.android.material.shape.ShapeAppearanceModel;
+import com.google.android.material.shape.CornerFamily;
 
 public class DetailObatSediaanFragment extends Fragment {
 
@@ -75,12 +77,29 @@ public class DetailObatSediaanFragment extends Fragment {
     }
 
     private void addChip(String text) {
+        if (text == null || text.isEmpty()) return;
+
+        // clean regex
+        String cleanText = text.replaceAll("^\\d+[a-zA-Z]*\\.\\s*", "# ");
+
         Chip chip = new Chip(requireContext());
-        chip.setText(text);
+        chip.setText(cleanText);
         chip.setClickable(false);
-        chip.setEnsureMinTouchTargetSize(false);
-        // Style the chip slightly
-        chip.setChipBackgroundColorResource(com.google.android.material.R.color.m3_sys_color_dynamic_light_surface_container_high);
+        chip.setCheckable(false);
+
+        chip.setEllipsize(android.text.TextUtils.TruncateAt.END);
+
+        chip.setChipBackgroundColorResource(R.color.muted_white);
+
+        chip.setTextColor(getResources().getColor(R.color.dark_grey, null));
+        chip.setChipStrokeColorResource(R.color.light_grey);
+        chip.setChipStrokeWidth(3f);
+
+        ShapeAppearanceModel shape = chip.getShapeAppearanceModel().toBuilder()
+                .setAllCorners(CornerFamily.ROUNDED, 100f) // radius chip
+                .build();
+        chip.setShapeAppearanceModel(shape);
+
         binding.chipGroupCategories.addView(chip);
     }
 
