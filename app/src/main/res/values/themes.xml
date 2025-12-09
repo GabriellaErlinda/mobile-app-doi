@@ -18,6 +18,7 @@
         <!-- Status bar -->
         <item name="android:statusBarColor">#FFFFFF</item>
         <item name="android:windowLightStatusBar">true</item>
+
     </style>
 
     <style name="TabTextStyle" parent="TextAppearance.Material3.LabelLarge">

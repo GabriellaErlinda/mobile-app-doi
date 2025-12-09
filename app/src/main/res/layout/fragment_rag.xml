@@ -29,15 +29,17 @@
             android:orientation="horizontal"
             android:padding="12dp"
             android:gravity="center_vertical">
+
             <TextView
                 android:id="@+id/textSafety"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:fontFamily="@font/nunito_sans_medium"
+                android:lineSpacingExtra="2dp"
                 android:text="Informasi ini dibuat oleh AI dan bukan pengganti saran dokter profesional."
-                android:textSize="12sp"
                 android:textColor="@color/primary_variant"
-                android:lineSpacingExtra="2dp"/>
+                android:textSize="12dp" />
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 
@@ -102,13 +104,14 @@
                     android:id="@+id/inputMessage"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:background="@color/muted_white"
+                    android:fontFamily="@font/nunito_sans_medium"
                     android:hint="Tulis pertanyaan Anda..."
+                    android:inputType="textCapSentences|textMultiLine"
+                    android:maxLines="4"
                     android:paddingHorizontal="16dp"
                     android:paddingVertical="16dp"
-                    android:textSize="16sp"
-                    android:maxLines="4"
-                    android:inputType="textCapSentences|textMultiLine"
-                    android:background="@color/muted_white"/>
+                    android:textSize="16sp" />
             </com.google.android.material.card.MaterialCardView>
 
             <com.google.android.material.button.MaterialButton

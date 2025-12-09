@@ -33,12 +33,13 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="6dp"
-        android:text="Kategori"
-        android:textSize="11sp"
-        android:textColor="@color/text_primary"
-        android:gravity="center"
-        android:maxLines="2"
         android:ellipsize="end"
-        android:lineSpacingExtra="0dp"/>
+        android:fontFamily="@font/nunito_sans_medium"
+        android:gravity="center"
+        android:lineSpacingExtra="0dp"
+        android:maxLines="2"
+        android:text="Kategori"
+        android:textColor="@color/text_primary"
+        android:textSize="10dp" />
 
 </LinearLayout>

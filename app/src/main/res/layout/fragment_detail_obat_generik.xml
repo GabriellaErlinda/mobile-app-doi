@@ -24,8 +24,8 @@
             app:navigationIcon="@drawable/ic_arrow_back"
             app:navigationIconTint="@color/white"
             app:title="Detail Obat Generik"
-            app:titleTextColor="@color/white"
-            app:titleCentered="true"/>
+            app:titleCentered="false"
+            app:titleTextColor="@color/white" />
     </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.core.widget.NestedScrollView
@@ -44,11 +44,13 @@
                 android:id="@+id/tvDrugName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp"
+                android:fontFamily="@font/montserrat_extrabold"
                 android:text="Nama Obat Generik"
-                android:textSize="24sp"
-                android:textStyle="bold"
+                android:textAlignment="center"
                 android:textColor="@color/black"
-                android:layout_marginBottom="12dp"/>
+                android:textSize="22dp"
+                android:textStyle="bold" />
 
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/cardBrands"
@@ -68,21 +70,23 @@
                     android:padding="16dp">
 
                     <TextView
-                        android:text="Merek Dagang / Produsen"
-                        android:textStyle="bold"
-                        android:textSize="13sp"
-                        android:textColor="@color/primary_variant"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"/>
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/montserrat_bold"
+                        android:text="Merek Dagang / Produsen"
+                        android:textColor="@color/primary_variant"
+                        android:textSize="14dp"
+                        android:textStyle="bold" />
 
                     <TextView
                         android:id="@+id/tvBrands"
-                        android:text="-"
-                        android:textSize="14sp"
-                        android:textColor="@color/text_secondary"
-                        android:layout_marginTop="4dp"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"/>
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:fontFamily="@font/nunito_sans_medium"
+                        android:text="-"
+                        android:textColor="@color/text_secondary"
+                        android:textSize="14dp" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
@@ -105,34 +109,39 @@
                     android:padding="16dp">
 
                     <TextView
-                        android:text="💊 Informasi Dosis"
-                        android:textStyle="bold"
-                        android:textColor="@color/primary_variant"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="12dp"/>
+                        android:layout_marginBottom="12dp"
+                        android:fontFamily="@font/montserrat_bold"
+                        android:text="💊 Informasi Dosis"
+                        android:textColor="@color/primary_variant"
+                        android:textStyle="bold" />
 
-                    <!-- Dosis Umum (Wrapped in Section) -->
+                    <!-- Dosis Umum -->
                     <LinearLayout
                         android:id="@+id/sectionDosis"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="vertical"
                         android:layout_marginBottom="12dp">
+
                         <TextView
-                            android:text="Dosis Lazim"
-                            android:textStyle="bold"
-                            android:textSize="13sp"
-                            android:textColor="@color/text_primary"
                             android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"/>
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/nunito_sans_bold"
+                            android:text="Dosis Lazim"
+                            android:textColor="@color/text_primary"
+                            android:textSize="14dp"
+                            android:textStyle="bold" />
+
                         <TextView
                             android:id="@+id/tvDosis"
-                            android:text="-"
-                            android:textSize="14sp"
-                            android:textColor="@color/text_secondary"
                             android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"/>
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/nunito_sans_medium"
+                            android:text="-"
+                            android:textColor="@color/text_secondary"
+                            android:textSize="14dp" />
                     </LinearLayout>
 
                     <!-- Dosis Awal -->
@@ -146,13 +155,15 @@
                         <TextView
                             android:text="Dosis Awal (Loading Dose)"
                             android:textStyle="bold"
-                            android:textSize="13sp"
+                            android:textSize="14dp"
+                            android:fontFamily="@font/nunito_sans_bold"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"/>
                         <TextView
                             android:id="@+id/tvDosisAwal"
                             android:text="-"
-                            android:textSize="14sp"
+                            android:textSize="14dp"
+                            android:fontFamily="@font/nunito_sans_medium"
                             android:textColor="@color/text_secondary"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"/>
@@ -168,13 +179,15 @@
                         <TextView
                             android:text="Dosis Pemeliharaan"
                             android:textStyle="bold"
-                            android:textSize="13sp"
+                            android:textSize="14dp"
+                            android:fontFamily="@font/nunito_sans_bold"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"/>
                         <TextView
                             android:id="@+id/tvDosisPemeliharaan"
                             android:text="-"
-                            android:textSize="14sp"
+                            android:textSize="14dp"
+                            android:fontFamily="@font/nunito_sans_medium"
                             android:textColor="@color/text_secondary"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"/>
@@ -201,12 +214,13 @@
                     android:padding="16dp">
 
                     <TextView
-                        android:text="⚠️ Peringatan Keamanan"
-                        android:textStyle="bold"
-                        android:textColor="@color/error"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="12dp"/>
+                        android:layout_marginBottom="12dp"
+                        android:fontFamily="@font/montserrat_bold"
+                        android:text="⚠️ Peringatan Keamanan"
+                        android:textColor="@color/error"
+                        android:textStyle="bold" />
 
                     <LinearLayout
                         android:id="@+id/sectionKontraindikasi"
@@ -214,20 +228,24 @@
                         android:layout_height="wrap_content"
                         android:orientation="vertical"
                         android:layout_marginBottom="12dp">
+
                         <TextView
-                            android:text="Kontraindikasi"
-                            android:textStyle="bold"
-                            android:textSize="13sp"
-                            android:textColor="@color/text_error"
                             android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"/>
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/nunito_sans_bold"
+                            android:text="Kontraindikasi"
+                            android:textColor="@color/text_error"
+                            android:textSize="14dp"
+                            android:textStyle="bold" />
+
                         <TextView
                             android:id="@+id/tvKontraindikasi"
-                            android:text="-"
-                            android:textSize="14sp"
-                            android:textColor="@color/text_error"
                             android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"/>
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/nunito_sans_medium"
+                            android:text="-"
+                            android:textColor="@color/text_error"
+                            android:textSize="14dp" />
                     </LinearLayout>
 
                     <LinearLayout
@@ -236,20 +254,24 @@
                         android:layout_height="wrap_content"
                         android:orientation="vertical"
                         android:layout_marginBottom="12dp">
+
                         <TextView
-                            android:text="Efek Samping"
-                            android:textStyle="bold"
-                            android:textSize="13sp"
-                            android:textColor="@color/text_error"
                             android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"/>
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/nunito_sans_bold"
+                            android:text="Efek Samping"
+                            android:textColor="@color/text_error"
+                            android:textSize="14dp"
+                            android:textStyle="bold" />
+
                         <TextView
                             android:id="@+id/tvEfekSamping"
-                            android:text="-"
-                            android:textSize="14sp"
-                            android:textColor="@color/text_error"
                             android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"/>
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/nunito_sans_medium"
+                            android:text="-"
+                            android:textColor="@color/text_error"
+                            android:textSize="14dp" />
                     </LinearLayout>
 
                     <LinearLayout
@@ -257,20 +279,24 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="vertical">
+
                         <TextView
-                            android:text="Perhatian"
-                            android:textStyle="bold"
-                            android:textSize="13sp"
-                            android:textColor="@color/text_error"
                             android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"/>
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/nunito_sans_bold"
+                            android:text="Perhatian"
+                            android:textColor="@color/text_error"
+                            android:textSize="14dp"
+                            android:textStyle="bold" />
+
                         <TextView
                             android:id="@+id/tvPerhatian"
-                            android:text="-"
-                            android:textSize="14sp"
-                            android:textColor="@color/text_error"
                             android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"/>
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/nunito_sans_medium"
+                            android:text="-"
+                            android:textColor="@color/text_error"
+                            android:textSize="14dp" />
                     </LinearLayout>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
@@ -299,20 +325,24 @@
                         android:layout_height="wrap_content"
                         android:orientation="vertical"
                         android:layout_marginBottom="12dp">
+
                         <TextView
-                            android:text="Interaksi Obat"
-                            android:textStyle="bold"
-                            android:textSize="13sp"
-                            android:textColor="@color/text_primary"
                             android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"/>
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/nunito_sans_bold"
+                            android:text="Interaksi Obat"
+                            android:textColor="@color/text_primary"
+                            android:textSize="14dp"
+                            android:textStyle="bold" />
+
                         <TextView
                             android:id="@+id/tvInteraksi"
-                            android:text="-"
-                            android:textSize="14sp"
-                            android:textColor="@color/text_secondary"
                             android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"/>
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/nunito_sans_medium"
+                            android:text="-"
+                            android:textColor="@color/text_secondary"
+                            android:textSize="14dp" />
                     </LinearLayout>
 
                     <LinearLayout
@@ -321,20 +351,24 @@
                         android:layout_height="wrap_content"
                         android:orientation="vertical"
                         android:layout_marginBottom="12dp">
+
                         <TextView
-                            android:text="Indikasi"
-                            android:textStyle="bold"
-                            android:textSize="13sp"
-                            android:textColor="@color/text_primary"
                             android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"/>
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/nunito_sans_bold"
+                            android:text="Indikasi"
+                            android:textColor="@color/text_primary"
+                            android:textSize="14dp"
+                            android:textStyle="bold" />
+
                         <TextView
                             android:id="@+id/tvIndikasi"
-                            android:text="-"
-                            android:textSize="14sp"
-                            android:textColor="@color/text_secondary"
                             android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"/>
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/nunito_sans_medium"
+                            android:text="-"
+                            android:textColor="@color/text_secondary"
+                            android:textSize="14dp" />
                     </LinearLayout>
 
                     <LinearLayout
@@ -343,20 +377,24 @@
                         android:layout_height="wrap_content"
                         android:orientation="vertical"
                         android:layout_marginBottom="12dp">
+
                         <TextView
-                            android:text="Farmakologi"
-                            android:textStyle="bold"
-                            android:textSize="13sp"
-                            android:textColor="@color/text_primary"
                             android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"/>
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/nunito_sans_bold"
+                            android:text="Farmakologi"
+                            android:textColor="@color/text_primary"
+                            android:textSize="14dp"
+                            android:textStyle="bold" />
+
                         <TextView
                             android:id="@+id/tvFarmakologi"
-                            android:text="-"
-                            android:textSize="14sp"
-                            android:textColor="@color/text_secondary"
                             android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"/>
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/nunito_sans_medium"
+                            android:text="-"
+                            android:textColor="@color/text_secondary"
+                            android:textSize="14dp" />
                     </LinearLayout>
 
                     <LinearLayout
@@ -364,20 +402,24 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="vertical">
+
                         <TextView
-                            android:text="Informasi Tambahan (Extras)"
-                            android:textStyle="bold"
-                            android:textSize="13sp"
-                            android:textColor="@color/text_primary"
                             android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"/>
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/nunito_sans_bold"
+                            android:text="Informasi Tambahan (Extras)"
+                            android:textColor="@color/text_primary"
+                            android:textSize="14dp"
+                            android:textStyle="bold" />
+
                         <TextView
                             android:id="@+id/tvExtras"
-                            android:text="-"
-                            android:textSize="14sp"
-                            android:textColor="@color/text_secondary"
                             android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"/>
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/nunito_sans_medium"
+                            android:text="-"
+                            android:textColor="@color/text_secondary"
+                            android:textSize="14dp" />
                     </LinearLayout>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>

@@ -12,9 +12,10 @@ import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.HashMap; // Diganti dari Collections karena butuh put 2 data
 import java.util.List;
 import java.util.Map;
+import java.util.UUID; // Import untuk Session ID unik
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -27,11 +28,12 @@ import okhttp3.Response;
 public class RagViewModel extends AndroidViewModel {
 
     private static final String TAG = "RagViewModel";
-    // Sesuaikan endpoint Flask
-    private static final String FLASK_BACKEND_URL = "http://10.188.43.97:5000/tanya-obat";
+
+    private static final String FLASK_BACKEND_URL = "http://10.13.215.97:5000/tanya-obat";
 
     private final OkHttpClient httpClient;
     private final Gson gson;
+    private final String currentSessionId;
 
     private final MutableLiveData<List<ChatMessage>> chatMessages = new MutableLiveData<>();
     private final List<ChatMessage> messageList = new ArrayList<>();
@@ -39,20 +41,22 @@ public class RagViewModel extends AndroidViewModel {
     public RagViewModel(@NonNull Application application) {
         super(application);
 
-        // Pakai timeout yang lebih besar supaya tidak cepat timeout saat RAG + Gemini
+        this.currentSessionId = UUID.randomUUID().toString();
+        Log.d(TAG, "Session ID initialized: " + currentSessionId);
+
+        // Setup Timeout (LLM butuh waktu lama, pertahankan timeout tinggi)
         this.httpClient = new OkHttpClient.Builder()
-                .connectTimeout(15, TimeUnit.SECONDS)   // waktu sambung ke server
-                .writeTimeout(30, TimeUnit.SECONDS)     // waktu kirim body
-                .readTimeout(90, TimeUnit.SECONDS)      // waktu tunggu jawaban server
-                // .callTimeout(0, TimeUnit.SECONDS)
+                .connectTimeout(15, TimeUnit.SECONDS)
+                .writeTimeout(30, TimeUnit.SECONDS)
+                .readTimeout(90, TimeUnit.SECONDS) // Backend Senopati melakukan RAG + LLM, butuh waktu
                 .retryOnConnectionFailure(true)
                 .build();
 
         this.gson = new Gson();
 
-        // Pesan sambutan awal dari asisten
+        // Pesan sambutan
         messageList.add(new ChatMessage(
-                "Halo! Ada yang bisa saya bantu terkait informasi obat?",
+                "Halo! Saya Medibot asisten apoteker Anda. Ada yang bisa saya bantu terkait informasi obat?",
                 ChatMessage.Type.ASSISTANT
         ));
         chatMessages.setValue(new ArrayList<>(messageList));
@@ -67,22 +71,24 @@ public class RagViewModel extends AndroidViewModel {
             return;
         }
 
-        // 1. pesan user
+        // 1. Tambah pesan user ke UI
         ChatMessage userMessage = new ChatMessage(userQuery, ChatMessage.Type.USER);
         messageList.add(userMessage);
 
-        // 2. pesan "loading"
+        // 2. Tambah indikator loading
         ChatMessage loadingMessage = new ChatMessage("...", ChatMessage.Type.LOADING);
         messageList.add(loadingMessage);
 
-        // 3. Update UI (dipanggil dari main thread)
         chatMessages.setValue(new ArrayList<>(messageList));
 
-        // 4. Panggilan jaringan di background thread
+        // 3. Request ke Backend Senopati
         CompletableFuture.runAsync(() -> {
             try {
-                // Body JSON yang dikirim ke Flask
-                Map<String, String> bodyMap = Collections.singletonMap("pertanyaan", userQuery);
+                // Buat Payload JSON: {"pertanyaan": "...", "session_id": "..."}
+                Map<String, String> bodyMap = new HashMap<>();
+                bodyMap.put("pertanyaan", userQuery);
+                bodyMap.put("session_id", currentSessionId);
+
                 String jsonBody = gson.toJson(bodyMap);
 
                 RequestBody body = RequestBody.create(
@@ -95,66 +101,63 @@ public class RagViewModel extends AndroidViewModel {
                         .post(body)
                         .build();
 
-                Log.d(TAG, "Mengirim request ke: " + FLASK_BACKEND_URL);
-                Log.d(TAG, "Request body: " + jsonBody);
+                Log.d(TAG, "Mengirim ke Senopati: " + jsonBody);
 
-                // try-with-resources agar response tertutup otomatis
                 try (Response response = httpClient.newCall(request).execute()) {
-                    int code = response.code();
                     String responseJson = response.body() != null ? response.body().string() : "";
-
-                    Log.d(TAG, "HTTP code: " + code);
-                    Log.d(TAG, "Response JSON: " + responseJson);
+                    Log.d(TAG, "Respon Senopati: " + responseJson);
 
                     if (response.isSuccessful()) {
-                        // Parse JSON dari Flask, misalnya: { "jawaban": "..." }
                         FlaskResponse flaskResponse = gson.fromJson(responseJson, FlaskResponse.class);
 
-                        if (flaskResponse == null || flaskResponse.jawaban == null) {
-                            Log.e(TAG, "FlaskResponse null / field 'jawaban' null");
-                            updateLastMessage(new ChatMessage(
-                                    "Maaf, format balasan server tidak sesuai.\n" + responseJson,
-                                    ChatMessage.Type.ASSISTANT
-                            ));
-                        } else {
-                            // Ganti "loading" dengan jawaban AI
+                        if (flaskResponse != null && flaskResponse.jawaban != null) {
+                            // Sukses: Tampilkan jawaban AI
                             updateLastMessage(new ChatMessage(
                                     flaskResponse.jawaban,
                                     ChatMessage.Type.ASSISTANT
                             ));
+                        } else {
+                            updateLastMessage(new ChatMessage(
+                                    "Maaf, respon server kosong.",
+                                    ChatMessage.Type.ASSISTANT
+                            ));
                         }
                     } else {
-                        Log.e(TAG, "Request gagal: " + code + " " + response.message());
                         updateLastMessage(new ChatMessage(
-                                "Maaf, terjadi kesalahan pada server (" + code + ").",
+                                "Gagal terhubung ke Senopati (Error " + response.code() + ")",
                                 ChatMessage.Type.ASSISTANT
                         ));
                     }
                 }
 
             } catch (Exception e) {
-                Log.e(TAG, "Error saat memanggil backend", e);
+                Log.e(TAG, "Error network", e);
                 updateLastMessage(new ChatMessage(
-                        "Maaf, terjadi error: " + e.getClass().getSimpleName() + " - " + e.getMessage(),
+                        "Terjadi kesalahan koneksi: " + e.getMessage(),
                         ChatMessage.Type.ASSISTANT
                 ));
             }
         });
     }
 
-
     private void updateLastMessage(ChatMessage newMessage) {
         if (messageList.isEmpty()) return;
 
+        // Hapus bubble loading "..."
         messageList.remove(messageList.size() - 1);
+        // Masukkan jawaban asli
         messageList.add(newMessage);
 
-        // postValue karena dipanggil dari background thread
+        // Update UI (postValue aman untuk background thread)
         chatMessages.postValue(new ArrayList<>(messageList));
     }
 
+    // Class model untuk memparsing JSON balasan dari app-senopati2.py
     private static class FlaskResponse {
         @SerializedName("jawaban")
         String jawaban;
+
+        @SerializedName("session_id") // Backend sekarang mengembalikan session_id juga
+        String sessionId;
     }
 }

@@ -32,23 +32,25 @@
                 android:id="@+id/textName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/panadol"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                android:textColor="@color/text_primary"
                 android:ellipsize="end"
-                android:maxLines="1"/>
+                android:fontFamily="@font/montserrat_bold"
+                android:maxLines="1"
+                android:text="@string/panadol"
+                android:textColor="@color/text_primary"
+                android:textSize="15dp"
+                android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/textMeta"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/manufacturer_kategori"
-                android:textSize="13sp"
-                android:textColor="@color/text_secondary"
                 android:layout_marginTop="4dp"
                 android:ellipsize="end"
-                android:maxLines="1"/>
+                android:fontFamily="@font/nunito_sans_medium"
+                android:maxLines="1"
+                android:text="@string/manufacturer_kategori"
+                android:textColor="@color/text_secondary"
+                android:textSize="12dp" />
         </LinearLayout>
 
     </LinearLayout>

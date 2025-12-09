@@ -29,11 +29,12 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="4dp"
+                android:fontFamily="@font/montserrat_extrabold"
                 android:text="DAFTAR OBAT"
-                android:textSize="24sp"
-                android:textStyle="bold"
                 android:textColor="@color/white"
-                android:layout_marginBottom="4dp" />
+                android:textSize="24sp"
+                android:textStyle="bold" />
         </LinearLayout>
 
         <!-- Tabs -->
@@ -77,13 +78,14 @@
                         android:id="@+id/searchInput"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
+                        android:background="@color/muted_white"
+                        android:fontFamily="@font/nunito_sans_medium"
                         android:hint="Cari obat generik ..."
-                        android:paddingHorizontal="16dp"
-                        android:paddingVertical="12dp"
-                        android:textSize="14sp"
                         android:imeOptions="actionSearch"
                         android:inputType="text"
-                        android:background="@color/muted_white"/>
+                        android:paddingHorizontal="16dp"
+                        android:paddingVertical="12dp"
+                        android:textSize="16sp" />
                 </com.google.android.material.card.MaterialCardView>
 
 

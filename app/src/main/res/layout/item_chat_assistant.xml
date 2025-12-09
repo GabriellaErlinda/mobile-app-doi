@@ -28,7 +28,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textColor="@color/secondary_variant"
-                android:textSize="14sp" />
+                android:textSize="14dp"
+                android:fontFamily="@font/nunito_sans_medium"/>
 
             <!-- Citation chips -->
             <com.google.android.material.chip.ChipGroup
@@ -45,7 +46,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="6dp"
                 android:textColor="@color/secondary_variant"
-                android:textSize="10sp"
+                android:textSize="10dp"
                 android:alpha="0.6"/>
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>

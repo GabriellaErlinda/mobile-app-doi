@@ -121,37 +121,10 @@ public class HomeFragment extends Fragment {
         });
     }
 
-    /* // BAGIAN INI DI-COMMENT DENGAN BLOK AGAR LEBIH AMAN DAN TIDAK MENYISAKAN KURUNG KURAWAL
-    private void setupHistory() {
-        String[] history = new String[]{"Paracetamol", "Amoksisilin", "CTM"};
-        for (String item : history) {
-            MaterialCardView card = new MaterialCardView(requireContext());
-            card.setRadius(12);
-            card.setStrokeWidth(1);
-            card.setStrokeColor(MaterialColors.getColor(card, com.google.android.material.R.attr.colorOutline));
-            card.setClickable(true);
-            card.setUseCompatPadding(true);
-            TextView tv = new TextView(requireContext());
-            tv.setText("🔍 " + item);
-            tv.setPadding(16, 12, 16, 12);
-            tv.setTextSize(14);
-            card.addView(tv);
-            card.setOnClickListener(v -> {
-                Bundle args = new Bundle();
-                args.putString("searchQuery", item);
-                navController.navigate(R.id.nav_library, args);
-            });
-            binding.layoutHistory.addView(card);
-            LinearLayout.LayoutParams lp = (LinearLayout.LayoutParams) card.getLayoutParams();
-            lp.setMargins(0, 0, 0, 8);
-            card.setLayoutParams(lp);
-        }
-    }
-    */
 
     private void setupObservers() {
         viewModel.getText().observe(getViewLifecycleOwner(), text -> {
-            binding.homeTitle.setText("Halo, " + text);
+            binding.homeTitle.setText(text);
         });
     }
 

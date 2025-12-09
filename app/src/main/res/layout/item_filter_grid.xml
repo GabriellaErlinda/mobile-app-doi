@@ -19,14 +19,15 @@
         android:id="@+id/tvFilterName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Nama Kategori"
-        android:textSize="13sp"
-        android:textColor="@color/primary_variant"
-        android:gravity="center"
-        android:paddingVertical="14dp"
-        android:paddingHorizontal="8dp"
-        android:maxLines="2"
         android:ellipsize="end"
-        android:textStyle="bold"/>
+        android:fontFamily="@font/nunito_sans_bold"
+        android:gravity="center"
+        android:maxLines="2"
+        android:paddingHorizontal="8dp"
+        android:paddingVertical="14dp"
+        android:text="Nama Kategori"
+        android:textColor="@color/primary_variant"
+        android:textSize="13sp"
+        android:textStyle="bold" />
 
 </com.google.android.material.card.MaterialCardView>

@@ -37,12 +37,13 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
+                android:ellipsize="end"
+                android:fontFamily="@font/montserrat_medium"
+                android:maxLines="1"
                 android:text="NAMA KATEGORI"
                 android:textColor="@color/white"
                 android:textSize="18sp"
-                android:textStyle="bold"
-                android:maxLines="1"
-                android:ellipsize="end"/>
+                android:textStyle="bold" />
         </LinearLayout>
 
         <LinearLayout
@@ -67,13 +68,14 @@
                     android:id="@+id/inputSearch"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:background="@color/muted_white"
+                    android:fontFamily="@font/nunito_sans_medium"
                     android:hint="Cari obat sediaan ..."
-                    android:paddingHorizontal="16dp"
-                    android:paddingVertical="12dp"
-                    android:textSize="14sp"
                     android:imeOptions="actionSearch"
                     android:inputType="text"
-                    android:background="@color/muted_white"/>
+                    android:paddingHorizontal="16dp"
+                    android:paddingVertical="12dp"
+                    android:textSize="14sp" />
             </com.google.android.material.card.MaterialCardView>
 
             <!-- Filter btn (only for Semua Kategori) -->

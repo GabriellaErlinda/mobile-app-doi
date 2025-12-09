@@ -22,7 +22,8 @@
             android:layout_height="wrap_content"
             android:text="Test Message"
             android:textColor="@color/white"
-            android:textSize="15sp"
+            android:textSize="14dp"
+            android:fontFamily="@font/nunito_sans_medium"
             android:lineSpacingMultiplier="1.1"/>
 
         <TextView
