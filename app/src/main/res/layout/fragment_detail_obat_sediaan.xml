@@ -44,7 +44,7 @@
                 android:id="@+id/tvDrugName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="4dp"
+                android:layout_marginBottom="2dp"
                 android:fontFamily="@font/montserrat_extrabold"
                 android:text="Nama Obat"
                 android:textAlignment="center"
@@ -60,14 +60,24 @@
                 android:text="Manufaktur"
                 android:textAlignment="center"
                 android:textColor="@color/dark_grey"
-                android:textSize="14sp"
+                android:textSize="14dp"
                 android:textStyle="bold" />
 
-            <com.google.android.material.chip.ChipGroup
-                android:id="@+id/chipGroupCategories"
+            <HorizontalScrollView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="24dp"/>
+                android:layout_marginBottom="24dp"
+                android:scrollbars="none"
+                android:clipToPadding="false">
+
+                <com.google.android.material.chip.ChipGroup
+                    android:id="@+id/chipGroupCategories"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:singleLine="true"
+                    app:chipSpacingHorizontal="8dp" />
+
+            </HorizontalScrollView>
 
             <!-- Medical Info Card (Fixed: Removed Style, added manual attributes) -->
             <com.google.android.material.card.MaterialCardView

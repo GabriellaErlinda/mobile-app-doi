@@ -1,5 +1,7 @@
 package com.example.doirag.ui.library;
 
+import static android.text.method.Touch.scrollTo;
+
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -39,6 +41,7 @@ public class ObatSediaanListFragment extends Fragment {
 
     private String categoryFilter;
     private String pageTitle;
+    private FastScroller fastScroller;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -58,6 +61,7 @@ public class ObatSediaanListFragment extends Fragment {
         recycler = v.findViewById(R.id.recycler);
         layoutManager = new LinearLayoutManager(requireContext());
         recycler.setLayoutManager(layoutManager);
+        fastScroller = v.findViewById(R.id.fastScroller);
 
         adapter = new ObatSediaanAdapter(item -> {
             Bundle bundle = new Bundle();
@@ -65,6 +69,32 @@ public class ObatSediaanListFragment extends Fragment {
             Navigation.findNavController(requireView()).navigate(R.id.nav_drug_detail, bundle);
         });
         recycler.setAdapter(adapter);
+
+
+        fastScroller.setListener(section -> {
+            List<ObatSediaanItem> currentList = adapter.getCurrentList();
+            if (currentList == null || currentList.isEmpty()) return;
+
+            for (int i = 0; i < currentList.size(); i++) {
+                String name = currentList.get(i).drug_name;
+                if (name != null && !name.isEmpty()) {
+                    String firstChar = name.substring(0, 1).toUpperCase();
+
+                    if (section.equals("#")) {
+                        if (Character.isDigit(firstChar.charAt(0))) {
+                            scrollTo(i);
+                            break;
+                        }
+                    } else {
+                        if (firstChar.compareTo(section) >= 0) {
+                            scrollTo(i);
+                            break;
+                        }
+                    }
+                }
+            }
+        });
+
 
         // 2. Connect ViewModel
         viewModel = new ViewModelProvider(requireActivity()).get(LibraryViewModel.class);
@@ -87,6 +117,10 @@ public class ObatSediaanListFragment extends Fragment {
         setupHeader(v);
 
         return v;
+    }
+
+    private void scrollTo(int position) {
+        layoutManager.scrollToPositionWithOffset(position, 0);
     }
 
     private void setupHeader(View v) {

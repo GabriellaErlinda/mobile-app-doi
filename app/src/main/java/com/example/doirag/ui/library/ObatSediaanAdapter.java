@@ -66,10 +66,10 @@ public class ObatSediaanAdapter extends ListAdapter<ObatSediaanItem, ObatSediaan
             textName.setText(d.drug_name);
             String meta = "";
             if (d.manufacturer != null && !d.manufacturer.isEmpty()) meta += d.manufacturer;
-            if (d.category_main != null && !d.category_main.isEmpty()) {
+            /*if (d.category_main != null && !d.category_main.isEmpty()) {
                 if (!meta.isEmpty()) meta += " • ";
                 meta += d.category_main;
-            }
+            }*/
             textMeta.setText(meta);
         }
     }
