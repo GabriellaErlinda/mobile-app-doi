@@ -52,9 +52,9 @@ public class HomeFragment extends Fragment {
         homeCats.add(new CategoryItem("Pernafasan", "1. Sistem Saluran Pernafasan", R.drawable.ic_pernapasan));
         homeCats.add(new CategoryItem("Kardio", "2. Sistem Kardiovaskuler", R.drawable.ic_kardiovaskular));
         homeCats.add(new CategoryItem("Pencernaan", "3. Sistem Saluran Cerna", R.drawable.ic_pencernaan));
-        homeCats.add(new CategoryItem("Saraf & Otot", "4. Sistem Saraf dan Otot", R.drawable.ic_saraf_otot));
+        homeCats.add(new CategoryItem("Saraf&Otot", "4. Sistem Saraf dan Otot", R.drawable.ic_saraf_otot));
         homeCats.add(new CategoryItem("Kemih", "5. Kemih dan Kelamin", R.drawable.ic_kemih));
-        homeCats.add(new CategoryItem("Metabolisme", "6. Sistem Metabolisme", R.drawable.ic_metabolisme));
+        homeCats.add(new CategoryItem("Metabolism", "6. Sistem Metabolisme", R.drawable.ic_metabolisme));
         homeCats.add(new CategoryItem("Imun", "7. Sistem Imunologi, Vaksin dan Imunosera", R.drawable.ic_imun));
         homeCats.add(new CategoryItem("Antibiotik", "8. Anti Biotika dll", R.drawable.ic_antibiotika));
         homeCats.add(new CategoryItem("Hormon", "9. HORMON", R.drawable.ic_hormon));
