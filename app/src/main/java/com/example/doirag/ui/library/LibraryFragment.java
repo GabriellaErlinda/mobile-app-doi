@@ -59,8 +59,8 @@ public class LibraryFragment extends Fragment {
         new com.google.android.material.tabs.TabLayoutMediator(
                 binding.tabLayout, binding.viewPager,
                 (tab, pos) -> {
-                    if (pos == 0) tab.setText("Daftar Obat Generik");
-                    else tab.setText("Daftar Sediaan Obat");
+                    if (pos == 0) tab.setText("Daftar Bahan Aktif");
+                    else tab.setText("Daftar Obat");
                 }
         ).attach();
 

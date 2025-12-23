@@ -72,13 +72,13 @@ public class ObatSediaanFragment extends Fragment {
         List<CategoryItem> list = new ArrayList<>();
         list.add(new CategoryItem("SEMUA KATEGORI", null, R.drawable.ic_all_category));
         list.add(new CategoryItem("PERNAFASAN", "1. Sistem Saluran Pernafasan", R.drawable.ic_pernapasan));
-        list.add(new CategoryItem("KARDIOVASKULER", "2. Sistem Kardiovaskuler", R.drawable.ic_kardiovaskular));
+        list.add(new CategoryItem("KARDIO-\nVASKULER", "2. Sistem Kardiovaskuler", R.drawable.ic_kardiovaskular));
         list.add(new CategoryItem("PENCERNAAN", "3. Sistem Saluran Cerna", R.drawable.ic_pencernaan));
         list.add(new CategoryItem("SARAF & OTOT", "4. Sistem Saraf dan Otot", R.drawable.ic_saraf_otot));
         list.add(new CategoryItem("KEMIH & KELAMIN", "5. Kemih dan Kelamin", R.drawable.ic_kemih));
         list.add(new CategoryItem("METABOLISME", "6. Sistem Metabolisme", R.drawable.ic_metabolisme));
-        list.add(new CategoryItem("IMUNOLOGI & VAKSIN", "7. Sistem Imunologi, Vaksin dan Imunosera", R.drawable.ic_imun));
-        list.add(new CategoryItem("ANTIBIOTIKA", "8. Anti Biotika dll", R.drawable.ic_antibiotika));
+        list.add(new CategoryItem("IMUNOLOGI, VAKSIN, & IMUNOSERA", "7. Sistem Imunologi, Vaksin dan Imunosera", R.drawable.ic_imun));
+        list.add(new CategoryItem("ANTIBIOTIKA DAN OBAT UMUM", "8. Anti Biotika dll", R.drawable.ic_antibiotika));
         list.add(new CategoryItem("HORMON", "9. HORMON", R.drawable.ic_hormon));
         list.add(new CategoryItem("MATA", "10. MATA", R.drawable.ic_mata));
         list.add(new CategoryItem("TELINGA", "11. TELINGA", R.drawable.ic_telinga));

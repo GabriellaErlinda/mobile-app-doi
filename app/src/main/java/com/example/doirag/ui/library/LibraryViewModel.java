@@ -41,7 +41,7 @@ public class LibraryViewModel extends AndroidViewModel {
     private final String SUPABASE_BASE_URL = BuildConfig.SUPABASE_URL;
     private final String SUPABASE_ANON_KEY = BuildConfig.SUPABASE_ANON_KEY;
 
-    private final String FLASK_BASE_URL = "http://10.13.215.97:5000";
+    private final String FLASK_BASE_URL = "http://10.120.193.97:5000";
 
     // --- Data Storage ---
     private List<ObatGenerikItem> masterGenerikList = new ArrayList<>();

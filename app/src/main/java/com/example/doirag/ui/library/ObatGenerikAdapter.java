@@ -67,7 +67,7 @@ public class ObatGenerikAdapter extends ListAdapter<ObatGenerikItem, ObatGenerik
             if (d.nama_obat_dan_produsen != null && !d.nama_obat_dan_produsen.isEmpty()) {
                 textMeta.setText(d.nama_obat_dan_produsen);
             } else {
-                textMeta.setText("Obat Generik");
+                textMeta.setText("Bahan Aktif");
             }
         }
     }

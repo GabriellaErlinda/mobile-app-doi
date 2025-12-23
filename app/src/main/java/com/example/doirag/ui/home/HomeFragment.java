@@ -49,16 +49,16 @@ public class HomeFragment extends Fragment {
     private void setupHomeCategories() {
         // 1. List category di home
         List<CategoryItem> homeCats = new ArrayList<>();
-        homeCats.add(new CategoryItem("Pernafasan", "1. Sistem Saluran Pernafasan", R.drawable.ic_pernapasan));
-        homeCats.add(new CategoryItem("Kardio", "2. Sistem Kardiovaskuler", R.drawable.ic_kardiovaskular));
-        homeCats.add(new CategoryItem("Pencernaan", "3. Sistem Saluran Cerna", R.drawable.ic_pencernaan));
-        homeCats.add(new CategoryItem("Saraf&Otot", "4. Sistem Saraf dan Otot", R.drawable.ic_saraf_otot));
-        homeCats.add(new CategoryItem("Kemih", "5. Kemih dan Kelamin", R.drawable.ic_kemih));
-        homeCats.add(new CategoryItem("Metabolism", "6. Sistem Metabolisme", R.drawable.ic_metabolisme));
-        homeCats.add(new CategoryItem("Imun", "7. Sistem Imunologi, Vaksin dan Imunosera", R.drawable.ic_imun));
-        homeCats.add(new CategoryItem("Antibiotik", "8. Anti Biotika dll", R.drawable.ic_antibiotika));
-        homeCats.add(new CategoryItem("Hormon", "9. HORMON", R.drawable.ic_hormon));
-        homeCats.add(new CategoryItem("Mata", "10. MATA", R.drawable.ic_mata));
+        homeCats.add(new CategoryItem("Sistem\nPernafasan", "1. Sistem Saluran Pernafasan", R.drawable.ic_pernapasan));
+        homeCats.add(new CategoryItem("Sistem\nKardiovaskuler", "2. Sistem Kardiovaskuler", R.drawable.ic_kardiovaskular));
+        homeCats.add(new CategoryItem("Sistem\nPencernaan", "3. Sistem Saluran Cerna", R.drawable.ic_pencernaan));
+        homeCats.add(new CategoryItem("Saraf &\nOtot", "4. Sistem Saraf dan Otot", R.drawable.ic_saraf_otot));
+        homeCats.add(new CategoryItem("Kemih &\nKelamin", "5. Kemih dan Kelamin", R.drawable.ic_kemih));
+        homeCats.add(new CategoryItem("Sistem\nMetabolisme", "6. Sistem Metabolisme", R.drawable.ic_metabolisme));
+        homeCats.add(new CategoryItem("Imunologi\n& Vaksin", "7. Sistem Imunologi, Vaksin dan Imunosera", R.drawable.ic_imun));
+        homeCats.add(new CategoryItem("Antibiotika\n& Obat Umum", "8. Anti Biotika dll", R.drawable.ic_antibiotika));
+        homeCats.add(new CategoryItem("Obat\nHormon", "9. HORMON", R.drawable.ic_hormon));
+        homeCats.add(new CategoryItem("Obat\nMata", "10. MATA", R.drawable.ic_mata));
 
         // 2. Setup RecyclerView Grid 5 Kolom
         binding.recyclerHomeCategories.setLayoutManager(new GridLayoutManager(requireContext(), 5));
