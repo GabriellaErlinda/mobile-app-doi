@@ -9,10 +9,6 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.example.doirag.BuildConfig;
-// Pastikan import model Item Anda benar
-// import com.example.doirag.model.ObatGenerikItem;
-// import com.example.doirag.model.ObatSediaanItem;
-
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.annotations.SerializedName;
@@ -40,17 +36,16 @@ public class LibraryViewModel extends AndroidViewModel {
     // --- Config ---
     private final String SUPABASE_BASE_URL = BuildConfig.SUPABASE_URL;
     private final String SUPABASE_ANON_KEY = BuildConfig.SUPABASE_ANON_KEY;
-
-    private final String FLASK_BASE_URL = "http://10.120.193.97:5000";
+    private final String FLASK_BASE_URL = "http://10.169.3.97:5000";
 
     // --- Data Storage ---
+    // List ini buat simpen data master biar gak perlu bolak-balik fetch ke server
     private List<ObatGenerikItem> masterGenerikList = new ArrayList<>();
     private List<ObatSediaanItem> allSediaanDrugs = new ArrayList<>();
 
     // --- State (Input) ---
     private final MutableLiveData<String> searchQuery = new MutableLiveData<>("");
-    private final MutableLiveData<Integer> currentTab = new MutableLiveData<>(0); // Default tab 0 (Generik)
-
+    private final MutableLiveData<Integer> currentTab = new MutableLiveData<>(0);
     private String activeCategoryFilter = null;
     private boolean isSortAscending = true;
 
@@ -58,6 +53,9 @@ public class LibraryViewModel extends AndroidViewModel {
     private final MutableLiveData<List<ObatGenerikItem>> filteredGenerikDrugs = new MutableLiveData<>();
     private final MutableLiveData<List<ObatSediaanItem>> filteredSediaanDrugs = new MutableLiveData<>();
     private final MutableLiveData<List<String>> categoryList = new MutableLiveData<>();
+
+    // _isLoading ini buat kontrol loading state di UI biar user tau ada proses
+    private final MutableLiveData<Boolean> _isLoading = new MutableLiveData<>(false);
 
     private static final String TAG = "LibraryViewModel";
     private boolean allSediaanLoaded = false;
@@ -68,17 +66,34 @@ public class LibraryViewModel extends AndroidViewModel {
         this.httpClient = new OkHttpClient();
         this.gson = new Gson();
 
-        // Load Data Awal (Supaya list tidak kosong saat pertama buka)
-        fetchAllSediaanDrugs();
-        fetchAllGenerikDrugs();
+        // Fers, kita load data awal pas ViewModel ini dibikin biar gak kosong melompong
+        fetchSediaanData(false);
+        fetchGenerikData(false);
         fetchCategories();
     }
 
-    // --- FUNGSI KONTROL UI ---
+    // --- UI CONTROLS ---
+
+    // Function buat dipantau Fragment biar animasinya jalan pas loading
+    public LiveData<Boolean> isLoading() { return _isLoading; }
+
+    public void refreshData() {
+        // Set loading jadi true biar animasinya muncul
+        _isLoading.setValue(true);
+
+        // Force refresh dengan bypass check 'Loaded' biar data beneran di-update
+        CompletableFuture<Void> fetchGenerik = fetchGenerikData(true);
+        CompletableFuture<Void> fetchSediaan = fetchSediaanData(true);
+
+        // Pas kedua proses beres, baru matiin loading state-nya
+        CompletableFuture.allOf(fetchGenerik, fetchSediaan)
+                .thenRun(() -> _isLoading.postValue(false));
+    }
+
     public void setCurrentTab(int position) {
         if (currentTab.getValue() == null || currentTab.getValue() != position) {
             currentTab.setValue(position);
-            // Re-apply search jika tab berubah (misal user ketik di tab 1 lalu pindah tab 2)
+            // Tiap pindah tab, logic search harus ke trigger ulang biar datanya sinkron
             applySearchLogic();
         }
     }
@@ -86,13 +101,14 @@ public class LibraryViewModel extends AndroidViewModel {
     public void setSearchQuery(String query) {
         if (searchQuery.getValue() == null || !searchQuery.getValue().equals(query)) {
             searchQuery.setValue(query);
+            // Search logic ke trigger tiap kali user ngetik sesuatu di EditText
             applySearchLogic();
         }
     }
 
     public void setSortOrder(boolean ascending) {
         this.isSortAscending = ascending;
-        // Sorting lokal tetap bisa dilakukan pada hasil yang sudah didapat
+        // Sorting lokal biar cepet tanpa hit API lagi
         sortCurrentResults();
     }
 
@@ -106,38 +122,35 @@ public class LibraryViewModel extends AndroidViewModel {
     public LiveData<List<ObatGenerikItem>> getFilteredGenerikDrugs() { return filteredGenerikDrugs; }
     public LiveData<List<ObatSediaanItem>> getFilteredSediaanDrugs() { return filteredSediaanDrugs; }
 
-    // --- LOGIC UTAMA SEARCH ---
+    // --- CORE LOGIC ---
 
     private void applySearchLogic() {
         String query = searchQuery.getValue();
         int tab = currentTab.getValue() != null ? currentTab.getValue() : 0;
 
-        // 1. Jika Query KOSONG -> Gunakan data lokal (Load All)
+        // Pas query kosong (user hapus ketikan), balikin ke data awal yang udah ada di RAM
         if (query == null || query.trim().isEmpty()) {
-            if (tab == 0) { // Generik
-                filteredGenerikDrugs.postValue(new ArrayList<>(masterGenerikList));
-            } else { // Sediaan
-                applyLocalFilterForSediaan(allSediaanDrugs); // Tetap butuh filter kategori
-            }
+            if (tab == 0) filteredGenerikDrugs.postValue(new ArrayList<>(masterGenerikList));
+            else applyLocalFilterForSediaan(allSediaanDrugs);
             return;
         }
 
-        // 2. Jika Ada Query -> Tembak API Python
-        // Tentukan scope berdasarkan Tab
-        String scope = (tab == 0) ? "generik" : "sediaan";
-        searchObatFromApi(query, scope);
+        // Kalo ada query-nya, panggil backend Flask buat dapetin hasil search
+        searchObatFromApi(query);
     }
 
-    private void searchObatFromApi(String query, String scope) {
+    private void searchObatFromApi(String query) {
         CompletableFuture.runAsync(() -> {
             try {
-                // Construct URL: /search-obat?q=...&scope=...&mode=fuzzy_supabase
+                int tab = currentTab.getValue() != null ? currentTab.getValue() : 0;
+                String type = (tab == 0) ? "generik" : "sediaan";
+
+                // Setup URL dengan query parameter q (query) dan k (limit 20 hasil)
                 HttpUrl url = HttpUrl.parse(FLASK_BASE_URL + "/search-obat")
                         .newBuilder()
                         .addQueryParameter("q", query)
-                        .addQueryParameter("k", "20") // Ambil top 20 hasil
-                        .addQueryParameter("scope", scope)
-                        .addQueryParameter("mode", "fuzzy_supabase") // Gunakan mode fuzzy RPC
+                        .addQueryParameter("type", type)
+                        .addQueryParameter("k", "20")
                         .build();
 
                 Request request = new Request.Builder().url(url).get().build();
@@ -145,52 +158,38 @@ public class LibraryViewModel extends AndroidViewModel {
                 try (Response response = httpClient.newCall(request).execute()) {
                     if (response.isSuccessful() && response.body() != null) {
                         String jsonResponse = response.body().string();
-
-                        // Parse Wrapper Response
                         SearchResponseWrapper wrapper = gson.fromJson(jsonResponse, SearchResponseWrapper.class);
+                        if (wrapper == null || wrapper.results == null) return;
 
-                        if (scope.equals("generik")) {
+                        // Parse datanya sesuai type yang lagi aktif (Generik vs Sediaan)
+                        if (type.equals("generik")) {
                             List<ObatGenerikItem> results = new ArrayList<>();
-                            if (wrapper.results != null) {
-                                for (SearchResultItem item : wrapper.results) {
-                                    // Deserialisasi 'attrs' menjadi objek ObatGenerikItem
-                                    ObatGenerikItem obat = gson.fromJson(item.attrs, ObatGenerikItem.class);
-                                    if(obat != null) results.add(obat);
-                                }
+                            for (SearchResultItem item : wrapper.results) {
+                                ObatGenerikItem obat = gson.fromJson(item.attrs, ObatGenerikItem.class);
+                                if (obat != null) results.add(obat);
                             }
-                            // Post value langsung (API results biasanya sudah sorted by relevansi)
                             filteredGenerikDrugs.postValue(results);
-
                         } else {
-                            // Scope: SEDIAAN
                             List<ObatSediaanItem> results = new ArrayList<>();
-                            if (wrapper.results != null) {
-                                for (SearchResultItem item : wrapper.results) {
-                                    // Deserialisasi 'attrs' menjadi objek ObatSediaanItem
-                                    ObatSediaanItem obat = gson.fromJson(item.attrs, ObatSediaanItem.class);
-                                    if(obat != null) results.add(obat);
-                                }
+                            for (SearchResultItem item : wrapper.results) {
+                                ObatSediaanItem obat = gson.fromJson(item.attrs, ObatSediaanItem.class);
+                                if (obat != null) results.add(obat);
                             }
-                            // Untuk sediaan, kita mungkin masih perlu filter kategori client-side
-                            // walaupun datanya dari API search
+                            // Setelah dapet hasil search, tetep filter kategori lokal biar match
                             applyLocalFilterForSediaan(results);
                         }
                     }
                 }
             } catch (Exception e) {
-                Log.e(TAG, "Error searching API: " + e.getMessage());
-                // Fallback: jika API mati, lakukan pencarian lokal manual (opsional)
-                // fallbackToLocalSearch(query);
+                Log.e(TAG, "Error searching API", e);
             }
         });
     }
 
-    // Helper untuk memfilter kategori & sort (Khusus Tab Sediaan)
-    // Ini dipanggil baik saat load semua (query kosong) maupun setelah dapat hasil API
     private void applyLocalFilterForSediaan(List<ObatSediaanItem> sourceList) {
         List<ObatSediaanItem> processed = new ArrayList<>(sourceList);
 
-        // 1. Filter Kategori
+        // Filter data berdasarkan kategori kalo kategorinya ada yang dipilih
         if (activeCategoryFilter != null && !activeCategoryFilter.isEmpty()) {
             List<ObatSediaanItem> temp = new ArrayList<>();
             for (ObatSediaanItem item : processed) {
@@ -201,8 +200,7 @@ public class LibraryViewModel extends AndroidViewModel {
             processed = temp;
         }
 
-        // 2. Sort (Hanya jika user meminta A-Z/Z-A, jika default biarkan urutan ranking API)
-        // Disini kita sort simple by name saja
+        // Terakhir, sort hasilnya A-Z atau Z-A
         Collections.sort(processed, (o1, o2) -> {
             String s1 = o1.drug_name != null ? o1.drug_name : "";
             String s2 = o2.drug_name != null ? o2.drug_name : "";
@@ -212,9 +210,9 @@ public class LibraryViewModel extends AndroidViewModel {
         filteredSediaanDrugs.postValue(processed);
     }
 
-    // Dipanggil saat tombol sort ditekan tanpa query berubah
     private void sortCurrentResults() {
-        if (currentTab.getValue() == 0) { // Generik
+        // Logic ini ke trigger pas user mencet tombol sort doang tanpa ngetik apa-apa
+        if (currentTab.getValue() == 0) {
             List<ObatGenerikItem> current = filteredGenerikDrugs.getValue();
             if(current != null) {
                 List<ObatGenerikItem> sorted = new ArrayList<>(current);
@@ -225,124 +223,74 @@ public class LibraryViewModel extends AndroidViewModel {
                 });
                 filteredGenerikDrugs.setValue(sorted);
             }
-        } else { // Sediaan
+        } else {
             List<ObatSediaanItem> current = filteredSediaanDrugs.getValue();
             if(current != null) applyLocalFilterForSediaan(current);
         }
     }
 
-    // --- CLASS WRAPPER UNTUK JSON API RESPONSE ---
-    private static class SearchResponseWrapper {
-        @SerializedName("results")
-        List<SearchResultItem> results;
-    }
+    // --- REFACTORED DATA FETCHING ---
 
-    private static class SearchResultItem {
-        @SerializedName("attrs")
-        JsonElement attrs; // Kita ambil sebagai JsonElement dulu, lalu convert sesuai tipe obat
-    }
+    private CompletableFuture<Void> fetchSediaanData(boolean forceRefresh) {
+        // Cek dulu datanya udah ada apa belum, kalo udah ada ngapain fetch lagi (kecuali force refresh)
+        if (allSediaanLoaded && !forceRefresh) return CompletableFuture.completedFuture(null);
 
-    // --- NETWORK CALLS (Initial Load) ---
-    // (Kode fetchAllSediaanDrugs, fetchAllGenerikDrugs, fetchCategories TETAP SAMA seperti file asli Anda)
-    // ... Copy paste method fetchAllSediaanDrugs, fetchAllGenerikDrugs, fetchCategories, dll di sini ...
-
-    // --- BATCH FETCHING IMPLEMENTATION (Disalin dari kode asli Anda agar tidak hilang) ---
-
-    public void fetchCategories() {
-        CompletableFuture.runAsync(() -> {
-            try {
-                HttpUrl url = HttpUrl.parse(SUPABASE_BASE_URL + "/rest/v1/distinct_categories")
-                        .newBuilder().addQueryParameter("select", "category_main").build();
-                Request request = new Request.Builder().url(url).get()
-                        .addHeader("apikey", SUPABASE_ANON_KEY).addHeader("Authorization", "Bearer " + SUPABASE_ANON_KEY).build();
-
-                try (Response response = httpClient.newCall(request).execute()) {
-                    if (response.isSuccessful() && response.body() != null) {
-                        String jsonString = response.body().string();
-                        Type listType = new TypeToken<List<CategoryWrapper>>(){}.getType();
-                        List<CategoryWrapper> rawList = gson.fromJson(jsonString, listType);
-                        List<String> strings = new ArrayList<>();
-                        if (rawList != null) for (CategoryWrapper item : rawList) if (item.category != null) strings.add(item.category);
-                        Collections.sort(strings, (s1, s2) -> {
-                            int n1 = extractNumber(s1); int n2 = extractNumber(s2);
-                            return (n1 != -1 && n2 != -1) ? Integer.compare(n1, n2) : s1.compareToIgnoreCase(s2);
-                        });
-                        categoryList.postValue(strings);
-                    }
-                }
-            } catch (Exception e) { Log.e(TAG, "Error fetching categories", e); }
-        });
-    }
-
-    // Helper Extract Number
-    private int extractNumber(String text) {
-        try {
-            Matcher matcher = Pattern.compile("^(\\d+)").matcher(text);
-            if (matcher.find()) return Integer.parseInt(matcher.group(1));
-            return -1;
-        } catch (Exception e) { return -1; }
-    }
-
-    private void fetchAllSediaanDrugs() {
-        if (allSediaanLoaded) return;
-        CompletableFuture.runAsync(() -> {
-            // ... (Isi sama dengan kode asli Anda: Loop fetch supabase) ...
-            // Saat selesai, update allSediaanDrugs
-            // Dan panggil: applyLocalFilterForSediaan(allSediaanDrugs);
-
-            // Simpelnya, panggil fungsi asli Anda, tapi di baris terakhir ganti applySearchAndFilters() menjadi:
-            // if(searchQuery.getValue().isEmpty()) applyLocalFilterForSediaan(allSediaanDrugs);
-        });
-
-        // --- Implementasi singkat fetchAllSediaanDrugs agar kode lengkap ---
-        CompletableFuture.runAsync(() -> {
+        return CompletableFuture.runAsync(() -> {
             List<ObatSediaanItem> completeList = new ArrayList<>();
             int offset = 0; int pageSize = 1000; boolean hasMoreData = true;
             try {
+                // Fetch bertahap per 1000 item biar Supabase-nya gak overload
                 while (hasMoreData) {
                     HttpUrl url = HttpUrl.parse(SUPABASE_BASE_URL + "/rest/v1/obat_sediaan")
                             .newBuilder().addQueryParameter("select", "id,name,manufacturer,category_main,category_sub,komposisi,farmakologi,indikasi,dosis,kontraindikasi,perhatian,efek_samping,interaksi_obat,kemasan")
                             .addQueryParameter("order", "name.asc").build();
-                    int rangeStart = offset; int rangeEnd = offset + pageSize - 1;
                     Request request = new Request.Builder().url(url).get()
                             .addHeader("apikey", SUPABASE_ANON_KEY).addHeader("Authorization", "Bearer " + SUPABASE_ANON_KEY)
-                            .addHeader("Range", rangeStart + "-" + rangeEnd).build();
+                            .addHeader("Range", offset + "-" + (offset + pageSize - 1)).build();
                     try (Response response = httpClient.newCall(request).execute()) {
                         if (response.isSuccessful() && response.body() != null) {
                             List<ObatSediaanItem> chunk = gson.fromJson(response.body().string(), new TypeToken<List<ObatSediaanItem>>(){}.getType());
-                            if (chunk != null && !chunk.isEmpty()) { completeList.addAll(chunk); offset += chunk.size(); if (chunk.size() < pageSize) hasMoreData = false; } else hasMoreData = false;
+                            if (chunk != null && !chunk.isEmpty()) {
+                                completeList.addAll(chunk);
+                                offset += chunk.size();
+                                if (chunk.size() < pageSize) hasMoreData = false;
+                            } else hasMoreData = false;
                         } else hasMoreData = false;
                     }
                 }
                 if (!completeList.isEmpty()) {
                     allSediaanDrugs = completeList;
                     allSediaanLoaded = true;
-                    // HANYA tampilkan data lokal jika tidak ada search query aktif
                     if (searchQuery.getValue() == null || searchQuery.getValue().isEmpty()) {
                         applyLocalFilterForSediaan(allSediaanDrugs);
                     }
                 }
-            } catch (Exception e) { Log.e(TAG, "Error fetching all drugs", e); }
+            } catch (Exception e) { Log.e(TAG, "Error fetching sediaan", e); }
         });
     }
 
-    private void fetchAllGenerikDrugs() {
-        if (allGenerikLoaded) return;
-        CompletableFuture.runAsync(() -> {
-            // ... (Logic fetch generik asli Anda) ...
+    private CompletableFuture<Void> fetchGenerikData(boolean forceRefresh) {
+        // Sama kayak sediaan, cek dulu datanya ada apa belum
+        if (allGenerikLoaded && !forceRefresh) return CompletableFuture.completedFuture(null);
+
+        return CompletableFuture.runAsync(() -> {
             List<ObatGenerikItem> completeList = new ArrayList<>();
             int offset = 0; int pageSize = 1000; boolean hasMoreData = true;
             try {
                 while (hasMoreData) {
                     HttpUrl url = HttpUrl.parse(SUPABASE_BASE_URL + "/rest/v1/obat_generik")
                             .newBuilder().addQueryParameter("select", "*").addQueryParameter("order", "name.asc").build();
-                    Request request = new Request.Builder().url(url).get().addHeader("apikey", SUPABASE_ANON_KEY)
-                            .addHeader("Authorization", "Bearer " + SUPABASE_ANON_KEY)
+                    Request request = new Request.Builder().url(url).get()
+                            .addHeader("apikey", SUPABASE_ANON_KEY).addHeader("Authorization", "Bearer " + SUPABASE_ANON_KEY)
                             .addHeader("Range", offset + "-" + (offset + pageSize - 1)).build();
                     try (Response response = httpClient.newCall(request).execute()) {
                         if (response.isSuccessful() && response.body() != null) {
                             List<ObatGenerikItem> chunk = gson.fromJson(response.body().string(), new TypeToken<List<ObatGenerikItem>>(){}.getType());
-                            if (chunk != null && !chunk.isEmpty()) { completeList.addAll(chunk); offset += chunk.size(); if (chunk.size() < pageSize) hasMoreData = false; } else hasMoreData = false;
+                            if (chunk != null && !chunk.isEmpty()) {
+                                completeList.addAll(chunk);
+                                offset += chunk.size();
+                                if (chunk.size() < pageSize) hasMoreData = false;
+                            } else hasMoreData = false;
                         } else hasMoreData = false;
                     }
                 }
@@ -357,5 +305,51 @@ public class LibraryViewModel extends AndroidViewModel {
         });
     }
 
-    private static class CategoryWrapper { @SerializedName("category_main") String category; }
+    public void fetchCategories() {
+        // Ambil daftar kategori yang ada di DB biar bisa dipake filter
+        CompletableFuture.runAsync(() -> {
+            try {
+                HttpUrl url = HttpUrl.parse(SUPABASE_BASE_URL + "/rest/v1/distinct_categories")
+                        .newBuilder().addQueryParameter("select", "category_main").build();
+                Request request = new Request.Builder().url(url).get()
+                        .addHeader("apikey", SUPABASE_ANON_KEY).addHeader("Authorization", "Bearer " + SUPABASE_ANON_KEY).build();
+
+                try (Response response = httpClient.newCall(request).execute()) {
+                    if (response.isSuccessful() && response.body() != null) {
+                        String jsonString = response.body().string();
+                        List<CategoryWrapper> rawList = gson.fromJson(jsonString, new TypeToken<List<CategoryWrapper>>(){}.getType());
+                        List<String> strings = new ArrayList<>();
+                        if (rawList != null) for (CategoryWrapper item : rawList) if (item.category != null) strings.add(item.category);
+                        // Sortir kategorinya berdasarkan angka fers, sisanya A-Z etc
+                        Collections.sort(strings, (s1, s2) -> {
+                            int n1 = extractNumber(s1); int n2 = extractNumber(s2);
+                            return (n1 != -1 && n2 != -1) ? Integer.compare(n1, n2) : s1.compareToIgnoreCase(s2);
+                        });
+                        categoryList.postValue(strings);
+                    }
+                }
+            } catch (Exception e) { Log.e(TAG, "Error fetching categories", e); }
+        });
+    }
+
+    private int extractNumber(String text) {
+        // Helper buat nyari angka di awal string kategori (misal "1. Sistem Saluran Pernafasan")
+        try {
+            Matcher matcher = Pattern.compile("^(\\d+)").matcher(text);
+            if (matcher.find()) return Integer.parseInt(matcher.group(1));
+            return -1;
+        } catch (Exception e) { return -1; }
+    }
+
+    private static class SearchResponseWrapper {
+        @SerializedName("results") List<SearchResultItem> results;
+    }
+
+    private static class SearchResultItem {
+        @SerializedName("attrs") JsonElement attrs;
+    }
+
+    private static class CategoryWrapper {
+        @SerializedName("category_main") String category;
+    }
 }

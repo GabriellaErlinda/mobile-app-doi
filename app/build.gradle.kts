@@ -91,6 +91,7 @@ dependencies {
 
     // RecyclerView
     implementation("androidx.recyclerview:recyclerview:1.3.2")
+    implementation(libs.swiperefreshlayout)
 
     // Testing
     testImplementation(libs.junit)

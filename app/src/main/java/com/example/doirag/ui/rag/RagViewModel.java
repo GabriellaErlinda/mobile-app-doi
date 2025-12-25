@@ -29,7 +29,7 @@ public class RagViewModel extends AndroidViewModel {
 
     private static final String TAG = "RagViewModel";
 
-    private static final String FLASK_BACKEND_URL = "http://10.13.215.97:5000/tanya-obat";
+    private static final String FLASK_BACKEND_URL = "http://10.169.3.97:5000/tanya-obat";
 
     private final OkHttpClient httpClient;
     private final Gson gson;

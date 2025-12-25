@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     //MAIN PALETTE
-    <color name="primary">#20B7D6</color>
-    <color name="primary_variant">#137AB1</color>
+    <color name="primary">#29E3E3</color>
+    <color name="primary_variant">#13A4B1</color>
     <color name="secondary">#1F2054</color>
     <color name="secondary_variant">#1F2054</color>
     <color name="light_blue">#9FE6F2</color>

@@ -33,15 +33,18 @@ public class LibraryFragment extends Fragment {
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        // Fers, kita inflate layout-nya pake ViewBinding biar rapi
         binding = FragmentLibraryBinding.inflate(inflater, container, false);
 
+        // Connect ke ViewModel-nya biar datanya sinkron se-activity
         viewModel = new ViewModelProvider(requireActivity()).get(LibraryViewModel.class);
 
-        // 1. Setup ViewPager
+        // 1. Setup ViewPager buat swipe-swipe antar tab
         FragmentStateAdapter adapter = new FragmentStateAdapter(this) {
             @NonNull
             @Override
             public Fragment createFragment(int position) {
+                // Kalo tab 0 isinya Generik, sisanya Sediaan
                 if (position == 0) {
                     return new ObatGenerikFragment();
                 } else {
@@ -50,12 +53,12 @@ public class LibraryFragment extends Fragment {
             }
             @Override
             public int getItemCount() {
-                return 2;
+                return 2; // Cuma ada 2 tab doang
             }
         };
         binding.viewPager.setAdapter(adapter);
 
-        // 2. Setup TabLayout
+        // 2. Setup TabLayout biar nyambung sama ViewPager
         new com.google.android.material.tabs.TabLayoutMediator(
                 binding.tabLayout, binding.viewPager,
                 (tab, pos) -> {
@@ -64,7 +67,7 @@ public class LibraryFragment extends Fragment {
                 }
         ).attach();
 
-        // 3. Setup Search Bar
+        // 3. Setup Search Bar logic
         searchInput = binding.searchInput;
         if (searchInput != null) {
             searchInput.addTextChangedListener(new TextWatcher() {
@@ -72,46 +75,72 @@ public class LibraryFragment extends Fragment {
                 @Override public void onTextChanged(CharSequence s, int start, int before, int count) {}
                 @Override
                 public void afterTextChanged(Editable s) {
+                    // Tiap kali user ngetik, search query di VM langsung ke trigger update
                     viewModel.setSearchQuery(s.toString());
                 }
             });
         }
 
-        // 4. Setup Tab Listener (Kontrol Visibilitas Header)
+        // Double check buat pastiin logic search-nya beneran ke trigger pas kosong
+        searchInput.addTextChangedListener(new TextWatcher() {
+            @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            @Override public void onTextChanged(CharSequence s, int start, int before, int count) {}
+            @Override
+            public void afterTextChanged(Editable s) {
+                String query = s.toString();
+                viewModel.setSearchQuery(query);
+
+                // Cek kalo query empty, reset logic harus jalan
+                if (query.isEmpty()) {
+                }
+            }
+        });
+
+        // 4. Setup Tab Listener buat kontrol visibilitas UI header
         binding.tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
                 viewModel.setCurrentTab(tab.getPosition());
 
                 if (tab.getPosition() == 0) {
-                    // TAB OBAT GENERIK: Tampilkan Search & Sort
+                    // Di Tab Generik: Search & Sort harus ada
                     binding.searchContainer.setVisibility(View.VISIBLE);
-                    // Tombol Filter tetap GONE untuk generik sesuai request sebelumnya
                     binding.btnFilter.setVisibility(View.GONE);
                 } else {
-                    // TAB OBAT SEDIAAN (GRID): Sembunyikan SEMUA (Search, Filter, Sort)
+                    // Di Tab Sediaan: Kita hide dulu biar fokus ke grid kategori etc
                     binding.searchContainer.setVisibility(View.GONE);
-                    // Sembunyikan juga chip filter aktif jika ada
                     binding.filterScrollView.setVisibility(View.GONE);
                 }
 
+                // Tiap ganti tab, search input kita clear biar gak rancu
                 if (searchInput != null) searchInput.setText("");
             }
             @Override public void onTabUnselected(TabLayout.Tab tab) {}
             @Override public void onTabReselected(TabLayout.Tab tab) {}
         });
 
-        // SORT BUTTON CLICK LISTENER
+        // Button Sort buat munculin menu A-Z etc
         binding.btnSort.setOnClickListener(v -> showSortMenu());
 
-        // FILTER BUTTON (Hanya logika, tapi tombolnya di-hide di layout untuk sekarang)
+        // Button Filter logic-nya ada di bottom sheet
         binding.btnFilter.setOnClickListener(v -> showFilterBottomSheet());
 
-        // Observe Active Filter to update Chip UI on the bar
+        // Observe data biar Chip Filter aktif di atas ke-update otomatis
         viewModel.getFilteredSediaanDrugs().observe(getViewLifecycleOwner(), list -> {
             updateActiveFilterChip();
         });
 
+        // Listener buat gesture tarik ke bawah buat refresh page
+        binding.swipeRefreshLayout.setOnRefreshListener(() -> {
+            viewModel.refreshData();
+        });
+
+        // Pantau loading state dari VM buat matiin/nyalain animasi refresh-nya
+        viewModel.isLoading().observe(getViewLifecycleOwner(), loading -> {
+            binding.swipeRefreshLayout.setRefreshing(loading);
+        });
+
+        // Cek kalo ada arguments masuk (misal dari Home)
         handleArguments();
 
         return binding.getRoot();
@@ -119,11 +148,13 @@ public class LibraryFragment extends Fragment {
 
     // --- Sort Menu Logic ---
     private void showSortMenu() {
+        // Bikin menu popup pas tombol sort diklik
         PopupMenu popup = new PopupMenu(requireContext(), binding.btnSort);
         popup.getMenu().add(0, 1, 0, "A→Z");
         popup.getMenu().add(0, 2, 0, "Z→A");
 
         popup.setOnMenuItemClickListener(item -> {
+            // Pas diklik, order-nya di VM langsung ke trigger berubah
             viewModel.setSortOrder(item.getItemId() == 1);
             return true;
         });
@@ -131,6 +162,7 @@ public class LibraryFragment extends Fragment {
     }
 
     private void showFilterBottomSheet() {
+        // Munculin modal dari bawah buat pilih kategori obat
         BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(requireContext());
 
         android.widget.ScrollView scrollView = new android.widget.ScrollView(requireContext());
@@ -148,6 +180,7 @@ public class LibraryFragment extends Fragment {
         ChipGroup chipGroup = new ChipGroup(requireContext());
         chipGroup.setSingleSelection(true);
 
+        // Chip 'Semua' buat reset filter
         Chip allChip = new Chip(requireContext());
         allChip.setText(R.string.semua_kategori);
         allChip.setCheckable(true);
@@ -158,6 +191,7 @@ public class LibraryFragment extends Fragment {
         });
         chipGroup.addView(allChip);
 
+        // Ambil list kategori yang ada di VM
         List<String> categories = viewModel.getCategoryList().getValue();
         if (categories != null) {
             for (String cat : categories) {
@@ -168,6 +202,7 @@ public class LibraryFragment extends Fragment {
                     chip.setChecked(true);
                 }
                 chip.setOnClickListener(v -> {
+                    // Pas kategori dipilih, filter di VM langsung ke trigger
                     viewModel.setCategoryFilter(cat);
                     bottomSheetDialog.dismiss();
                 });
@@ -182,13 +217,12 @@ public class LibraryFragment extends Fragment {
     }
 
     private void updateActiveFilterChip() {
+        // Update UI chip yang ada di bawah tab bar
         binding.activeFiltersChipGroup.removeAllViews();
         String currentFilter = viewModel.getActiveCategoryFilter();
 
+        // filter ada, tampilin chip-nya
         if (currentFilter != null) {
-            // Hanya tampilkan chip filter jika kita TIDAK di Tab Sediaan (Grid)
-            // Tapi karena Tab Sediaan menyembunyikan parent viewnya (filterScrollView),
-            // ini aman.
             binding.filterScrollView.setVisibility(View.VISIBLE);
 
             Chip chip = new Chip(requireContext());
@@ -197,7 +231,7 @@ public class LibraryFragment extends Fragment {
             chip.setOnCloseIconClickListener(v -> viewModel.setCategoryFilter(null));
             binding.activeFiltersChipGroup.addView(chip);
         } else {
-            // Jika tidak ada filter aktif dan kita di tab generik (pos 0), hide scrollview
+            // Kalo gak ada filter, scrollview-nya di-hide aja biar gak nyampah
             if (binding.tabLayout.getSelectedTabPosition() == 0) {
                 binding.filterScrollView.setVisibility(View.GONE);
             }
@@ -207,10 +241,12 @@ public class LibraryFragment extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        // Memory management: clear binding biar gak leak
         binding = null;
     }
 
     private void handleArguments() {
+        // Logic buat nangkep kiriman data dari fragment lain (misal search query fers)
         if (getArguments() == null || searchInput == null) return;
 
         String query = getArguments().getString("searchQuery");
@@ -218,6 +254,7 @@ public class LibraryFragment extends Fragment {
             searchInput.setText(query);
         }
 
+        // Cek kalo butuh auto-focus ke search bar pas masuk
         boolean focus = getArguments().getBoolean("focusSearch");
         if (focus) {
             searchInput.post(() -> {
@@ -226,6 +263,6 @@ public class LibraryFragment extends Fragment {
                 imm.showSoftInput(searchInput, InputMethodManager.SHOW_IMPLICIT);
             });
         }
-        getArguments().clear();
+        getArguments().clear(); // Udah dipake, clear biar ga ke trigger lagi pas rotate etc
     }
 }

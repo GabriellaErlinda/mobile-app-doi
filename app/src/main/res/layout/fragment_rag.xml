@@ -80,7 +80,7 @@
         android:layout_height="wrap_content"
         app:cardElevation="8dp"
         app:cardCornerRadius="0dp"
-        android:backgroundTint="@color/primary_variant"
+        android:backgroundTint="@color/background"
         app:layout_constraintBottom_toBottomOf="parent">
 
         <LinearLayout
@@ -97,14 +97,15 @@
                 android:layout_weight="1"
                 app:cardCornerRadius="16dp"
                 app:cardElevation="0dp"
-                app:strokeWidth="0dp"
-                android:backgroundTint="@color/muted_white">
+                app:strokeWidth="1dp"
+                android:backgroundTint="@color/muted_white"
+                app:strokeColor="@color/primary_variant">
 
                 <EditText
                     android:id="@+id/inputMessage"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@color/muted_white"
+                    android:background="@color/surface"
                     android:fontFamily="@font/nunito_sans_medium"
                     android:hint="Tulis pertanyaan Anda..."
                     android:inputType="textCapSentences|textMultiLine"
@@ -116,7 +117,7 @@
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/buttonSend"
-                style="@style/Widget.Material3.Button.OutlinedButton"
+                style="@style/Widget.Material3.Button.IconButton.Filled"
                 android:layout_width="50dp"
                 android:layout_height="50dp"
                 android:layout_marginStart="8dp"
@@ -131,6 +132,7 @@
                 app:iconGravity="textStart"
                 app:iconPadding="0dp"
                 app:iconTint="@color/white"
+                app:backgroundTint="@color/primary_variant"
                 app:strokeColor="@color/white" />
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
